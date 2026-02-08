@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Flappy Bird - Game</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div class="background"></div>
+
+    <div class="game-container">
+      <div class="game-header">
+        <h1>Flappy Bird</h1>
+        <p class="score-display">Score: <span id="score">0</span></p>
+      </div>
+
+      <canvas id="gameCanvas" width="400" height="600"></canvas>
+
+      <div class="game-controls">
+        <button id="startBtn" class="btn btn-start">START GAME</button>
+        <button id="pauseBtn" class="btn btn-pause" disabled>PAUSE</button>
+        <button id="resetBtn" class="btn btn-reset">RESET</button>
+      </div>
+
+      <div class="game-info">
+        <div class="info-box">
+          <span class="label">Best Score:</span>
+          <span class="value" id="bestScore">0</span>
+        </div>
+        <div class="info-box">
+          <span class="label">Instructions:</span>
+          <span class="value">SPACE or CLICK to Flap</span>
+        </div>
+      </div>
+
+      <div id="gameOverScreen" class="game-over-screen">
+        <div class="game-over-content">
+          <h2>GAME OVER</h2>
+          <p class="final-score">Final Score: <span id="finalScore">0</span></p>
+          <p class="best-message">Best: <span id="bestMessage">0</span></p>
+          <button
+            class="btn btn-restart"
+            onclick="document.getElementById('startBtn').click()"
+          >
+            PLAY AGAIN
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <script src="game.js"></script>
+  </body>
+</html>
