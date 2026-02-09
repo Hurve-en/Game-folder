@@ -1,317 +1,225 @@
-const canvas = document.getElementById("myCanvas");
+const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
 
-// Game variables
-let gameRunning = false;
-let gamePaused = false;
+// Game state
+let isGameRunning = false;
 let score = 0;
-let bestScore = localStorage.getItem("blockGameBest") || 0;
+let bestScore = localStorage.getItem("flappyBirdBest") || 0;
 
-// Keys pressed
-const keys = {
-  left: false,
-  right: false,
-  up: false,
-};
-
-// Player
-const player = {
-  x: 250,
-  y: 300,
-  width: 30,
-  height: 30,
+// Bird properties
+const bird = {
+  x: 100,
+  y: 250,
+  width: 40,
+  height: 40,
   velocityY: 0,
-  velocityX: 0,
-  speed: 5,
-  jumpPower: 15,
-  gravity: 0.6,
-  isJumping: false,
+  gravity: 0.5,
+  flap: -12,
+  color: "#FFD700",
 };
 
-// Platforms
-let platforms = [];
-const platformWidth = 80;
-const platformHeight = 20;
+// Pipes array
+let pipes = [];
+let pipeCounter = 0;
 
-// Colors (Minecraft style)
-const colors = {
-  sky: "#87CEEB",
-  ground: "#90EE90",
-  grass: "#4CAF50",
-  wood: "#8B4513",
-  stone: "#A9A9A9",
-  player: "#FF6B6B",
-  playerOutline: "#CC5555",
-};
+const PIPE_WIDTH = 80;
+const PIPE_GAP = 150;
+const PIPE_SPACING = 200;
 
-// Initialize
+// Update best score display
 document.getElementById("best").textContent = bestScore;
 
 // Event listeners
+document.getElementById("startBtn").addEventListener("click", startGame);
+document.getElementById("resetBtn").addEventListener("click", resetGame);
+
 document.addEventListener("keydown", (e) => {
-  if (e.key === "ArrowLeft" || e.key === "a" || e.key === "A") keys.left = true;
-  if (e.key === "ArrowRight" || e.key === "d" || e.key === "D")
-    keys.right = true;
-  if (e.key === "ArrowUp" || e.key === "w" || e.key === "W") {
+  if (e.code === "Space" && isGameRunning) {
     e.preventDefault();
-    keys.up = true;
+    bird.velocityY = bird.flap;
   }
 });
 
-document.addEventListener("keyup", (e) => {
-  if (e.key === "ArrowLeft" || e.key === "a" || e.key === "A")
-    keys.left = false;
-  if (e.key === "ArrowRight" || e.key === "d" || e.key === "D")
-    keys.right = false;
-  if (e.key === "ArrowUp" || e.key === "w" || e.key === "W") keys.up = false;
+canvas.addEventListener("click", () => {
+  if (isGameRunning) {
+    bird.velocityY = bird.flap;
+  }
 });
 
-document.getElementById("startBtn").addEventListener("click", startGame);
-document.getElementById("pauseBtn").addEventListener("click", togglePause);
-document.getElementById("resetBtn").addEventListener("click", resetGame);
-
 function startGame() {
-  if (gameRunning) return;
+  if (isGameRunning) return;
 
-  gameRunning = true;
-  gamePaused = false;
+  isGameRunning = true;
   score = 0;
-  platforms = [];
-  player.x = canvas.width / 2 - player.width / 2;
-  player.y = canvas.height - 150;
-  player.velocityY = 0;
-  player.velocityX = 0;
-  player.isJumping = false;
+  pipes = [];
+  pipeCounter = 0;
+  bird.y = canvas.height / 2;
+  bird.velocityY = 0;
 
   document.getElementById("score").textContent = score;
   document.getElementById("startBtn").disabled = true;
-  document.getElementById("pauseBtn").disabled = false;
-  document.getElementById("gameOver").classList.add("hidden");
 
-  createInitialPlatforms();
   gameLoop();
 }
 
-function togglePause() {
-  if (!gameRunning) return;
-
-  gamePaused = !gamePaused;
-  document.getElementById("pauseBtn").textContent = gamePaused
-    ? "RESUME"
-    : "PAUSE";
-
-  if (!gamePaused) {
-    gameLoop();
-  }
-}
-
 function resetGame() {
-  gameRunning = false;
-  gamePaused = false;
+  isGameRunning = false;
   score = 0;
-  platforms = [];
-  player.y = canvas.height - 150;
-  player.velocityY = 0;
-  player.velocityX = 0;
-  player.isJumping = false;
+  pipes = [];
+  bird.y = canvas.height / 2;
+  bird.velocityY = 0;
 
   document.getElementById("score").textContent = score;
   document.getElementById("startBtn").disabled = false;
-  document.getElementById("pauseBtn").disabled = true;
-  document.getElementById("pauseBtn").textContent = "PAUSE";
-  document.getElementById("gameOver").classList.add("hidden");
 
   draw();
 }
 
-function createInitialPlatforms() {
-  platforms = [];
-  for (let i = 0; i < 8; i++) {
-    const platformX = Math.random() * (canvas.width - platformWidth);
-    const platformY = canvas.height - 100 - i * 60;
-    platforms.push({
-      x: platformX,
-      y: platformY,
-      width: platformWidth,
-      height: platformHeight,
-      color: i % 2 === 0 ? colors.grass : colors.stone,
-    });
-  }
-}
-
 function update() {
-  // Player movement
-  player.velocityX = 0;
+  // Bird gravity
+  bird.velocityY += bird.gravity;
+  bird.y += bird.velocityY;
 
-  if (keys.left && player.x > 0) {
-    player.velocityX = -player.speed;
-  }
-  if (keys.right && player.x < canvas.width - player.width) {
-    player.velocityX = player.speed;
-  }
-
-  player.x += player.velocityX;
-
-  // Wrap around screen
-  if (player.x < 0) player.x = canvas.width;
-  if (player.x > canvas.width) player.x = 0;
-
-  // Gravity
-  if (!player.isJumping || player.velocityY > 0) {
-    player.velocityY += player.gravity;
+  // Create pipes
+  pipeCounter++;
+  if (pipeCounter > PIPE_SPACING) {
+    const gapY = Math.random() * (canvas.height - PIPE_GAP - 100) + 50;
+    pipes.push({
+      x: canvas.width,
+      gapStart: gapY,
+      gapEnd: gapY + PIPE_GAP,
+      passed: false,
+    });
+    pipeCounter = 0;
   }
 
-  player.y += player.velocityY;
+  // Update pipes
+  for (let i = pipes.length - 1; i >= 0; i--) {
+    pipes[i].x -= 5;
 
-  // Jump
-  if (keys.up && !player.isJumping) {
-    player.velocityY = -player.jumpPower;
-    player.isJumping = true;
-  }
-
-  // Platform collision
-  let onPlatform = false;
-  platforms.forEach((platform) => {
-    // Check if player is above platform and falling
-    if (
-      player.velocityY >= 0 &&
-      player.y + player.height >= platform.y &&
-      player.y + player.height <= platform.y + 15 &&
-      player.x + player.width > platform.x &&
-      player.x < platform.x + platform.width
-    ) {
-      player.y = platform.y - player.height;
-      player.velocityY = 0;
-      player.isJumping = false;
-      onPlatform = true;
-    }
-  });
-
-  // Create new platforms when player is high enough
-  if (player.y < canvas.height / 2) {
-    const minPlatformY = Math.min(...platforms.map((p) => p.y));
-
-    while (minPlatformY > 0) {
-      const newPlatformX = Math.random() * (canvas.width - platformWidth);
-      const newPlatformY = Math.min(...platforms.map((p) => p.y)) - 60;
-
-      platforms.push({
-        x: newPlatformX,
-        y: newPlatformY,
-        width: platformWidth,
-        height: platformHeight,
-        color: Math.random() > 0.5 ? colors.grass : colors.stone,
-      });
-
+    // Check if bird passed pipe
+    if (!pipes[i].passed && pipes[i].x + PIPE_WIDTH < bird.x) {
+      pipes[i].passed = true;
       score++;
       document.getElementById("score").textContent = score;
-      break;
+    }
+
+    // Remove off-screen pipes
+    if (pipes[i].x + PIPE_WIDTH < 0) {
+      pipes.splice(i, 1);
     }
   }
 
-  // Remove platforms below screen
-  platforms = platforms.filter((p) => p.y < canvas.height + 50);
+  // Check collisions with pipes
+  for (let pipe of pipes) {
+    // Check horizontal overlap
+    if (bird.x + bird.width > pipe.x && bird.x < pipe.x + PIPE_WIDTH) {
+      // Check vertical collision
+      if (bird.y < pipe.gapStart || bird.y + bird.height > pipe.gapEnd) {
+        gameOver();
+        return;
+      }
+    }
+  }
 
-  // Game over
-  if (player.y > canvas.height) {
-    endGame();
+  // Check boundary collisions
+  if (bird.y < 0 || bird.y + bird.height > canvas.height) {
+    gameOver();
+    return;
   }
 }
 
 function draw() {
-  // Background
+  // Clear canvas with sky gradient
   const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
   gradient.addColorStop(0, "#87CEEB");
   gradient.addColorStop(1, "#E0F6FF");
   ctx.fillStyle = gradient;
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-  // Draw platforms
-  platforms.forEach((platform) => {
-    // Platform block
-    ctx.fillStyle = platform.color;
-    ctx.fillRect(platform.x, platform.y, platform.width, platform.height);
-
-    // Border
-    ctx.strokeStyle = "#000";
-    ctx.lineWidth = 2;
-    ctx.strokeRect(platform.x, platform.y, platform.width, platform.height);
-
-    // Highlight effect
-    ctx.strokeStyle = "rgba(255, 255, 255, 0.3)";
-    ctx.lineWidth = 1;
-    ctx.strokeRect(
-      platform.x + 2,
-      platform.y + 2,
-      platform.width - 4,
-      platform.height - 4,
-    );
-  });
-
-  // Draw player (red block with face)
-  ctx.fillStyle = colors.player;
-  ctx.fillRect(player.x, player.y, player.width, player.height);
-
-  // Player outline
-  ctx.strokeStyle = colors.playerOutline;
+  // Draw ground
+  ctx.fillStyle = "#90EE90";
+  ctx.fillRect(0, canvas.height - 40, canvas.width, 40);
+  ctx.strokeStyle = "#228B22";
   ctx.lineWidth = 2;
-  ctx.strokeRect(player.x, player.y, player.width, player.height);
+  ctx.strokeRect(0, canvas.height - 40, canvas.width, 40);
 
-  // Player eyes
-  ctx.fillStyle = "#000";
-  const eyeSize = 4;
-  ctx.fillRect(player.x + 8, player.y + 8, eyeSize, eyeSize);
-  ctx.fillRect(player.x + 18, player.y + 8, eyeSize, eyeSize);
+  // Draw pipes (Minecraft blocks style)
+  for (let pipe of pipes) {
+    // Top pipe
+    ctx.fillStyle = "#4CAF50";
+    ctx.fillRect(pipe.x, 0, PIPE_WIDTH, pipe.gapStart);
+    ctx.strokeStyle = "#2E7D32";
+    ctx.lineWidth = 2;
+    ctx.strokeRect(pipe.x, 0, PIPE_WIDTH, pipe.gapStart);
 
-  // Player mouth
-  ctx.strokeStyle = "#000";
-  ctx.lineWidth = 1;
-  ctx.beginPath();
-  ctx.moveTo(player.x + 10, player.y + 20);
-  ctx.lineTo(player.x + 20, player.y + 20);
-  ctx.stroke();
+    // Bottom pipe
+    ctx.fillStyle = "#4CAF50";
+    ctx.fillRect(pipe.x, pipe.gapEnd, PIPE_WIDTH, canvas.height - pipe.gapEnd);
+    ctx.strokeRect(
+      pipe.x,
+      pipe.gapEnd,
+      PIPE_WIDTH,
+      canvas.height - pipe.gapEnd,
+    );
 
-  // Pause overlay
-  if (gamePaused) {
-    ctx.fillStyle = "rgba(0, 0, 0, 0.5)";
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-    ctx.fillStyle = "#FFF";
-    ctx.font = "bold 40px Arial";
-    ctx.textAlign = "center";
-    ctx.fillText("PAUSED", canvas.width / 2, canvas.height / 2);
+    // Add texture
+    ctx.fillStyle = "rgba(255, 255, 255, 0.1)";
+    for (let y = 0; y < pipe.gapStart; y += 20) {
+      ctx.fillRect(pipe.x, y, PIPE_WIDTH, 10);
+    }
+    for (let y = pipe.gapEnd; y < canvas.height; y += 20) {
+      ctx.fillRect(pipe.x, y, PIPE_WIDTH, 10);
+    }
   }
+
+  // Draw bird (yellow block)
+  ctx.fillStyle = bird.color;
+  ctx.fillRect(bird.x, bird.y, bird.width, bird.height);
+
+  // Bird outline
+  ctx.strokeStyle = "#FF8C00";
+  ctx.lineWidth = 3;
+  ctx.strokeRect(bird.x, bird.y, bird.width, bird.height);
+
+  // Bird eyes
+  ctx.fillStyle = "#000";
+  ctx.fillRect(bird.x + 10, bird.y + 10, 6, 6);
+  ctx.fillRect(bird.x + 24, bird.y + 10, 6, 6);
+
+  // Bird mouth
+  ctx.strokeStyle = "#000";
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.moveTo(bird.x + 12, bird.y + 28);
+  ctx.lineTo(bird.x + 28, bird.y + 28);
+  ctx.stroke();
 }
 
 function gameLoop() {
-  if (gameRunning && !gamePaused) {
-    update();
-  }
-
+  update();
   draw();
 
-  if (gameRunning && !gamePaused) {
+  if (isGameRunning) {
     requestAnimationFrame(gameLoop);
   }
 }
 
-function endGame() {
-  gameRunning = false;
-  gamePaused = false;
+function gameOver() {
+  isGameRunning = false;
   document.getElementById("startBtn").disabled = false;
-  document.getElementById("pauseBtn").disabled = true;
 
   // Update best score
   if (score > bestScore) {
     bestScore = score;
-    localStorage.setItem("blockGameBest", bestScore);
+    localStorage.setItem("flappyBirdBest", bestScore);
     document.getElementById("best").textContent = bestScore;
   }
 
-  // Show game over
-  document.getElementById("gameOverScore").textContent = score;
-  document.getElementById("gameOverBest").textContent = bestScore;
-  document.getElementById("gameOver").classList.remove("hidden");
+  // Show alert
+  setTimeout(() => {
+    alert(`Game Over!\nScore: ${score}\nBest: ${bestScore}`);
+  }, 100);
 }
 
 // Initial draw

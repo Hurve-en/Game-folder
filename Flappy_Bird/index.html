@@ -3,51 +3,28 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Block Game - Minecraft Style</title>
+    <title>Flappy Bird - Minecraft Theme</title>
     <link rel="stylesheet" href="style.css" />
   </head>
   <body>
-    <div class="game-wrapper">
-      <div class="header">
-        <h1>⛏️ BLOCK JUMPER</h1>
-        <div class="score-board">
-          <div class="score-item">
-            <label>Score:</label>
-            <span id="score">0</span>
-          </div>
-          <div class="score-item">
-            <label>Best:</label>
-            <span id="best">0</span>
-          </div>
+    <div class="container">
+      <div class="game-header">
+        <h1>🐦 FLAPPY BIRD</h1>
+        <div class="score-display">
+          <div>Score: <span id="score">0</span></div>
+          <div>Best: <span id="best">0</span></div>
         </div>
       </div>
 
-      <canvas id="myCanvas" width="600" height="400"></canvas>
+      <canvas id="gameCanvas" width="800" height="500"></canvas>
 
-      <div class="controls">
-        <button id="startBtn" class="btn btn-green">START</button>
-        <button id="pauseBtn" class="btn btn-yellow" disabled>PAUSE</button>
-        <button id="resetBtn" class="btn btn-red">RESET</button>
+      <div class="button-group">
+        <button id="startBtn" class="btn btn-start">START GAME</button>
+        <button id="resetBtn" class="btn btn-reset">RESET</button>
       </div>
 
-      <div class="info">
-        <p>⬅️ LEFT ARROW or A - Move Left</p>
-        <p>➡️ RIGHT ARROW or D - Move Right</p>
-        <p>⬆️ UP ARROW or W - Jump</p>
-      </div>
-    </div>
-
-    <div id="gameOver" class="modal hidden">
-      <div class="modal-box">
-        <h2>Game Over!</h2>
-        <p>Score: <span id="gameOverScore">0</span></p>
-        <p>Best: <span id="gameOverBest">0</span></p>
-        <button
-          class="btn btn-green"
-          onclick="document.getElementById('startBtn').click()"
-        >
-          Try Again
-        </button>
+      <div class="instructions">
+        <p>CLICK or SPACE to FLAP</p>
       </div>
     </div>
 
