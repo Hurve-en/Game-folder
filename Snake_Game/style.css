@@ -4,116 +4,129 @@
   box-sizing: border-box;
 }
 
+html,
 body {
-  font-family: Arial, sans-serif;
-  background: linear-gradient(135deg, #8fbc8f 0%, #90ee90 100%);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 100vh;
-  padding: 20px;
-}
-
-.container {
-  background: linear-gradient(135deg, #4caf50 0%, #45a049 100%);
-  border: 10px solid #2e7d32;
-  padding: 30px;
-  border-radius: 10px;
-  text-align: center;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
-  max-width: 500px;
   width: 100%;
+  height: 100%;
+  overflow: hidden;
+  font-family: Arial, sans-serif;
 }
 
-.header {
-  margin-bottom: 20px;
-}
-
-.header h1 {
-  font-size: 48px;
-  color: #ffd700;
-  text-shadow: 3px 3px 0px #000;
-  margin-bottom: 15px;
-  letter-spacing: 2px;
-}
-
-.stats {
-  display: flex;
-  gap: 15px;
-  justify-content: center;
-  flex-wrap: wrap;
-}
-
-.stat {
-  background: rgba(0, 0, 0, 0.2);
-  padding: 10px 20px;
-  border-radius: 5px;
-  border: 2px solid #ffd700;
-  color: white;
-  font-weight: bold;
-}
-
-.stat .label {
-  display: block;
-  font-size: 12px;
-  color: #ffd700;
-  text-transform: uppercase;
-  margin-bottom: 3px;
-}
-
-.stat .value {
-  display: block;
-  font-size: 24px;
-  color: #ffd700;
-  font-family: monospace;
+body {
+  background: #000;
 }
 
 #gameCanvas {
-  border: 5px solid #654321;
-  background: #1a1a1a;
   display: block;
-  margin: 20px auto;
-  box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.5);
   width: 100%;
-  max-width: 400px;
-  height: auto;
+  height: 100%;
+  background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2a 100%);
   image-rendering: pixelated;
+}
+
+/* UI Overlay */
+.ui-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 30px;
+  z-index: 100;
+}
+
+/* Top UI Section */
+.ui-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 40px;
+}
+
+.title {
+  font-size: 48px;
+  font-weight: bold;
+  color: #ffd700;
+  text-shadow: 3px 3px 0px #000;
+  letter-spacing: 2px;
+}
+
+.stats-bar {
+  display: flex;
+  gap: 30px;
+  background: rgba(0, 0, 0, 0.6);
+  padding: 20px 30px;
+  border-radius: 10px;
+  border: 2px solid #4caf50;
+  backdrop-filter: blur(5px);
+}
+
+.stat-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.stat-label {
+  font-size: 14px;
+  color: #b0b0b0;
+  text-transform: uppercase;
+  font-weight: bold;
+  letter-spacing: 1px;
+}
+
+.stat-value {
+  font-size: 32px;
+  color: #ffd700;
+  font-family: monospace;
+  font-weight: bold;
+  text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+}
+
+/* Bottom UI Section */
+.ui-bottom {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 15px;
+  pointer-events: auto;
 }
 
 .controls {
   display: flex;
-  gap: 10px;
-  justify-content: center;
-  margin: 20px 0;
-  flex-wrap: wrap;
+  gap: 15px;
 }
 
 .btn {
-  padding: 12px 24px;
-  font-size: 14px;
+  padding: 14px 32px;
+  font-size: 16px;
   font-weight: bold;
-  border: 4px solid;
+  border: 3px solid;
   border-radius: 5px;
   cursor: pointer;
   text-transform: uppercase;
   letter-spacing: 1px;
   transition: all 0.2s;
-  box-shadow: 0 4px 0 rgba(0, 0, 0, 0.3);
-  min-width: 130px;
+  box-shadow: 0 4px 0 rgba(0, 0, 0, 0.5);
 }
 
 .btn:hover:not(:disabled) {
   transform: translateY(-2px);
-  box-shadow: 0 6px 0 rgba(0, 0, 0, 0.3);
+  box-shadow: 0 6px 0 rgba(0, 0, 0, 0.5);
 }
 
 .btn:active:not(:disabled) {
   transform: translateY(2px);
-  box-shadow: 0 2px 0 rgba(0, 0, 0, 0.3);
+  box-shadow: 0 2px 0 rgba(0, 0, 0, 0.5);
 }
 
 .btn:disabled {
-  opacity: 0.6;
+  opacity: 0.5;
   cursor: not-allowed;
 }
 
@@ -136,27 +149,25 @@ body {
 }
 
 .instructions {
-  background: rgba(0, 0, 0, 0.15);
-  padding: 15px;
-  border-radius: 5px;
-  color: white;
+  background: rgba(0, 0, 0, 0.6);
+  padding: 12px 24px;
+  border-radius: 8px;
+  color: #b0b0b0;
+  font-size: 14px;
   font-weight: bold;
-  border: 2px solid rgba(255, 255, 255, 0.3);
-  font-size: 12px;
-  line-height: 1.8;
+  border: 2px solid #4caf50;
+  letter-spacing: 0.5px;
+  backdrop-filter: blur(5px);
 }
 
-.instructions p {
-  margin: 3px 0;
-}
-
+/* Modal */
 .modal {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0, 0, 0, 0.8);
+  background: rgba(0, 0, 0, 0.9);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -167,16 +178,16 @@ body {
   display: none;
 }
 
-.modal-box {
+.modal-content {
   background: linear-gradient(135deg, #4caf50 0%, #45a049 100%);
   border: 8px solid #2e7d32;
-  padding: 40px;
+  padding: 50px;
   border-radius: 10px;
   text-align: center;
   color: white;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 10px 60px rgba(0, 0, 0, 0.8);
   animation: popIn 0.4s ease-out;
-  max-width: 400px;
+  max-width: 500px;
 }
 
 @keyframes popIn {
@@ -190,54 +201,96 @@ body {
   }
 }
 
-.modal-box h2 {
-  font-size: 48px;
-  margin-bottom: 20px;
+.modal-content h2 {
+  font-size: 56px;
+  margin-bottom: 30px;
   color: #ffd700;
-  text-shadow: 2px 2px 0px #000;
+  text-shadow: 3px 3px 0px #000;
 }
 
-.modal-box p {
-  font-size: 20px;
+.score-info {
+  background: rgba(0, 0, 0, 0.3);
+  padding: 25px;
+  border-radius: 8px;
+  margin-bottom: 30px;
+}
+
+.score-info p {
+  font-size: 24px;
   margin: 12px 0;
   color: #ffd700;
   font-family: monospace;
   font-weight: bold;
 }
 
-.modal-box .btn {
-  margin-top: 20px;
+.modal-content .btn {
+  font-size: 18px;
+  padding: 16px 40px;
 }
 
-@media (max-width: 600px) {
-  .container {
+/* Responsive */
+@media (max-width: 1024px) {
+  .ui-top {
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .title {
+    font-size: 36px;
+  }
+
+  .stats-bar {
+    gap: 20px;
+    padding: 15px 20px;
+  }
+
+  .stat-value {
+    font-size: 24px;
+  }
+}
+
+@media (max-width: 768px) {
+  .ui-overlay {
     padding: 20px;
-    border: 5px solid #2e7d32;
   }
 
-  .header h1 {
-    font-size: 32px;
+  .title {
+    font-size: 28px;
   }
 
-  .stats {
-    gap: 10px;
+  .stats-bar {
+    gap: 15px;
+    padding: 12px 15px;
+    font-size: 12px;
   }
 
-  .stat {
-    padding: 8px 15px;
+  .stat-label {
+    font-size: 11px;
   }
 
-  .stat .value {
+  .stat-value {
     font-size: 18px;
   }
 
   .btn {
-    padding: 10px 16px;
+    padding: 10px 20px;
     font-size: 12px;
-    min-width: 100px;
   }
 
   .instructions {
-    font-size: 11px;
+    font-size: 12px;
+  }
+
+  .modal-content {
+    padding: 30px;
+    max-width: 90%;
+  }
+
+  .modal-content h2 {
+    font-size: 36px;
+  }
+
+  .score-info p {
+    font-size: 18px;
   }
 }

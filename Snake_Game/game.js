@@ -1,9 +1,17 @@
 const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
 
+// Set canvas size to window size
+function resizeCanvas() {
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+}
+resizeCanvas();
+window.addEventListener("resize", resizeCanvas);
+
 // Game constants
 const GRID_SIZE = 20;
-const TILE_SIZE = canvas.width / GRID_SIZE;
+let TILE_SIZE = canvas.width / GRID_SIZE;
 
 // Game variables
 let gameRunning = false;
@@ -11,7 +19,7 @@ let gamePaused = false;
 let score = 0;
 let level = 1;
 let bestScore = localStorage.getItem("snakeBest") || 0;
-let gameSpeed = 100; // milliseconds
+let gameSpeed = 100;
 
 // Snake
 let snake = [{ x: 10, y: 10 }];
@@ -65,7 +73,7 @@ function startGame() {
   score = 0;
   level = 1;
   gameSpeed = 100;
-  snake = [{ x: 10, y: 10 }];
+  snake = [{ x: Math.floor(GRID_SIZE / 2), y: Math.floor(GRID_SIZE / 2) }];
   nextDirection = "RIGHT";
   currentDirection = "RIGHT";
   spawnFood();
@@ -97,7 +105,7 @@ function resetGame() {
   gamePaused = false;
   score = 0;
   level = 1;
-  snake = [{ x: 10, y: 10 }];
+  snake = [{ x: Math.floor(GRID_SIZE / 2), y: Math.floor(GRID_SIZE / 2) }];
   nextDirection = "RIGHT";
   currentDirection = "RIGHT";
 
@@ -121,7 +129,6 @@ function spawnFood() {
       y: Math.floor(Math.random() * GRID_SIZE),
     };
 
-    // Check if food is not on snake
     validPosition = !snake.some(
       (segment) => segment.x === newFood.x && segment.y === newFood.y,
     );
@@ -131,10 +138,8 @@ function spawnFood() {
 }
 
 function update() {
-  // Update direction
   currentDirection = nextDirection;
 
-  // Calculate new head
   const head = { ...snake[0] };
 
   switch (currentDirection) {
@@ -152,27 +157,25 @@ function update() {
       break;
   }
 
-  // Check wall collision
+  // Wall collision
   if (head.x < 0 || head.x >= GRID_SIZE || head.y < 0 || head.y >= GRID_SIZE) {
     gameOver();
     return;
   }
 
-  // Check self collision
+  // Self collision
   if (snake.some((segment) => segment.x === head.x && segment.y === head.y)) {
     gameOver();
     return;
   }
 
-  // Add new head
   snake.unshift(head);
 
-  // Check food collision
+  // Food collision
   if (head.x === food.x && head.y === food.y) {
     score += 10;
     document.getElementById("score").textContent = score;
 
-    // Level up every 50 points
     if (score % 50 === 0) {
       level++;
       gameSpeed = Math.max(50, 100 - level * 5);
@@ -181,18 +184,23 @@ function update() {
 
     spawnFood();
   } else {
-    // Remove tail if didn't eat food
     snake.pop();
   }
 }
 
 function draw() {
+  // Update tile size based on canvas size
+  TILE_SIZE = canvas.width / GRID_SIZE;
+
   // Clear canvas
-  ctx.fillStyle = "#1a1a1a";
+  const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+  gradient.addColorStop(0, "#0a0a0a");
+  gradient.addColorStop(1, "#1a1a2a");
+  ctx.fillStyle = gradient;
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 
   // Draw grid
-  ctx.strokeStyle = "rgba(255, 255, 255, 0.1)";
+  ctx.strokeStyle = "rgba(255, 255, 255, 0.05)";
   ctx.lineWidth = 1;
   for (let i = 0; i <= GRID_SIZE; i++) {
     const pos = i * TILE_SIZE;
@@ -207,66 +215,73 @@ function draw() {
     ctx.stroke();
   }
 
-  // Draw food (red)
+  // Draw food
   ctx.fillStyle = "#FF6B6B";
   ctx.fillRect(
-    food.x * TILE_SIZE + 1,
-    food.y * TILE_SIZE + 1,
-    TILE_SIZE - 2,
-    TILE_SIZE - 2,
+    food.x * TILE_SIZE + 2,
+    food.y * TILE_SIZE + 2,
+    TILE_SIZE - 4,
+    TILE_SIZE - 4,
   );
+  ctx.shadowColor = "#FF6B6B";
+  ctx.shadowBlur = 10;
   ctx.strokeStyle = "#CC5555";
   ctx.lineWidth = 2;
   ctx.strokeRect(
-    food.x * TILE_SIZE + 1,
-    food.y * TILE_SIZE + 1,
-    TILE_SIZE - 2,
-    TILE_SIZE - 2,
+    food.x * TILE_SIZE + 2,
+    food.y * TILE_SIZE + 2,
+    TILE_SIZE - 4,
+    TILE_SIZE - 4,
   );
+  ctx.shadowColor = "transparent";
 
   // Draw snake
   snake.forEach((segment, index) => {
     if (index === 0) {
-      // Head - green
       ctx.fillStyle = "#4CAF50";
+      ctx.shadowColor = "#4CAF50";
+      ctx.shadowBlur = 15;
     } else {
-      // Body - lighter green
       ctx.fillStyle = "#66BB6A";
+      ctx.shadowColor = "transparent";
     }
 
     ctx.fillRect(
-      segment.x * TILE_SIZE + 1,
-      segment.y * TILE_SIZE + 1,
-      TILE_SIZE - 2,
-      TILE_SIZE - 2,
+      segment.x * TILE_SIZE + 2,
+      segment.y * TILE_SIZE + 2,
+      TILE_SIZE - 4,
+      TILE_SIZE - 4,
     );
 
-    // Border
     ctx.strokeStyle = "#2E7D32";
     ctx.lineWidth = 2;
     ctx.strokeRect(
-      segment.x * TILE_SIZE + 1,
-      segment.y * TILE_SIZE + 1,
-      TILE_SIZE - 2,
-      TILE_SIZE - 2,
+      segment.x * TILE_SIZE + 2,
+      segment.y * TILE_SIZE + 2,
+      TILE_SIZE - 4,
+      TILE_SIZE - 4,
     );
   });
 
-  // Draw pause overlay
+  ctx.shadowColor = "transparent";
+
+  // Pause overlay
   if (gamePaused) {
     ctx.fillStyle = "rgba(0, 0, 0, 0.7)";
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
     ctx.fillStyle = "#FFD700";
-    ctx.font = "bold 40px Arial";
+    ctx.font = "bold 80px Arial";
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
+    ctx.textShadow = "4px 4px 0px #000";
     ctx.fillText("PAUSED", canvas.width / 2, canvas.height / 2);
   }
 }
 
 function gameLoop() {
   if (!gameRunning || gamePaused) {
+    draw();
     return;
   }
 
@@ -283,16 +298,15 @@ function gameOver() {
   document.getElementById("pauseBtn").disabled = true;
   document.getElementById("pauseBtn").textContent = "PAUSE";
 
-  // Update best score
   if (score > bestScore) {
     bestScore = score;
     localStorage.setItem("snakeBest", bestScore);
     document.getElementById("best").textContent = bestScore;
   }
 
-  // Show game over modal
   document.getElementById("finalScore").textContent = score;
   document.getElementById("bestScore").textContent = bestScore;
+  document.getElementById("finalLevel").textContent = level;
   document.getElementById("gameOverModal").classList.remove("hidden");
 }
 
