@@ -6,15 +6,15 @@ let isGameRunning = false;
 let score = 0;
 let bestScore = localStorage.getItem("flappyBirdBest") || 0;
 
-// Bird properties
+// Bird properties - SLOWED DOWN
 const bird = {
   x: 100,
   y: 250,
   width: 40,
   height: 40,
   velocityY: 0,
-  gravity: 0.5,
-  flap: -12,
+  gravity: 0.25, // REDUCED from 0.5 - much slower fall
+  flap: -7, // REDUCED from -12 - gentler jump
   color: "#FFD700",
 };
 
@@ -25,6 +25,7 @@ let pipeCounter = 0;
 const PIPE_WIDTH = 80;
 const PIPE_GAP = 150;
 const PIPE_SPACING = 200;
+const PIPE_SPEED = 2; // REDUCED from 5 - much slower movement
 
 // Update best score display
 document.getElementById("best").textContent = bestScore;
@@ -76,7 +77,7 @@ function resetGame() {
 }
 
 function update() {
-  // Bird gravity
+  // Bird gravity - SLOW
   bird.velocityY += bird.gravity;
   bird.y += bird.velocityY;
 
@@ -93,9 +94,9 @@ function update() {
     pipeCounter = 0;
   }
 
-  // Update pipes
+  // Update pipes - SLOW
   for (let i = pipes.length - 1; i >= 0; i--) {
-    pipes[i].x -= 5;
+    pipes[i].x -= PIPE_SPEED;
 
     // Check if bird passed pipe
     if (!pipes[i].passed && pipes[i].x + PIPE_WIDTH < bird.x) {
