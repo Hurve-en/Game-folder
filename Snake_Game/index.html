@@ -2,57 +2,52 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Snake Game - Fullscreen</title>
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover"
+    />
+    <title>Snake Game</title>
     <link rel="stylesheet" href="style.css" />
   </head>
   <body>
-    <!-- Fullscreen Canvas -->
-    <canvas id="gameCanvas"></canvas>
-
-    <!-- UI Overlay -->
-    <div class="ui-overlay">
-      <div class="ui-top">
-        <div class="title">🐍 SNAKE GAME</div>
-        <div class="stats-bar">
-          <div class="stat-item">
-            <span class="stat-label">Score:</span>
-            <span class="stat-value" id="score">0</span>
-          </div>
-          <div class="stat-item">
-            <span class="stat-label">Best:</span>
-            <span class="stat-value" id="best">0</span>
-          </div>
-          <div class="stat-item">
-            <span class="stat-label">Level:</span>
-            <span class="stat-value" id="level">1</span>
-          </div>
+    <div class="game-wrapper">
+      <div class="top-bar">
+        <h1>🐍 SNAKE</h1>
+        <div class="stats">
+          <div>Score: <span id="score">0</span></div>
+          <div>Best: <span id="best">0</span></div>
         </div>
       </div>
 
-      <div class="ui-bottom">
-        <div class="controls">
-          <button id="startBtn" class="btn btn-green">START</button>
-          <button id="pauseBtn" class="btn btn-yellow" disabled>PAUSE</button>
-          <button id="resetBtn" class="btn btn-red">RESET</button>
+      <canvas id="gameCanvas"></canvas>
+
+      <div class="controls">
+        <button id="startBtn" class="btn">START</button>
+        <button id="pauseBtn" class="btn" disabled>PAUSE</button>
+        <button id="resetBtn" class="btn">RESET</button>
+      </div>
+
+      <div class="mobile-controls" id="mobileControls">
+        <button class="arrow-btn" id="upBtn">⬆️</button>
+        <div>
+          <button class="arrow-btn" id="leftBtn">⬅️</button>
+          <button class="arrow-btn" id="downBtn">⬇️</button>
+          <button class="arrow-btn" id="rightBtn">➡️</button>
         </div>
-        <div class="instructions">
-          ARROW KEYS or WASD to move | ESC for menu
-        </div>
+      </div>
+
+      <div class="instructions">
+        Desktop: Arrow Keys or WASD | Mobile: Use arrow buttons
       </div>
     </div>
 
-    <!-- Game Over Modal -->
     <div id="gameOverModal" class="modal hidden">
-      <div class="modal-content">
-        <h2>GAME OVER!</h2>
-        <div class="score-info">
-          <p>Final Score: <span id="finalScore">0</span></p>
-          <p>Best Score: <span id="bestScore">0</span></p>
-          <p>Level Reached: <span id="finalLevel">1</span></p>
-        </div>
+      <div class="modal-box">
+        <h2>GAME OVER</h2>
+        <p>Score: <span id="finalScore">0</span></p>
+        <p>Best: <span id="bestScore">0</span></p>
         <button
-          class="btn btn-green"
+          class="btn"
           onclick="document.getElementById('startBtn').click()"
         >
           Play Again
