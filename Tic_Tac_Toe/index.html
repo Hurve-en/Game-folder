@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Ultimate Tic Tac Toe - AI Edition</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div class="background">
+      <div class="stars"></div>
+      <div class="gradient"></div>
+    </div>
+
+    <div class="container">
+      <div class="header">
+        <h1 class="title">⚔️ ULTIMATE TIC TAC TOE ⚔️</h1>
+        <p class="subtitle">Challenge the AI or Play 2-Player</p>
+      </div>
+
+      <!-- Mode Selection -->
+      <div class="mode-selector" id="modeSelector">
+        <button class="mode-btn" id="vsAiBtn">
+          <div class="mode-icon">🤖</div>
+          <div class="mode-text">Play vs AI</div>
+        </button>
+        <button class="mode-btn" id="vsPcBtn">
+          <div class="mode-icon">👥</div>
+          <div class="mode-text">2 Player</div>
+        </button>
+      </div>
+
+      <!-- Game Stats -->
+      <div class="stats-container" id="statsContainer" style="display: none">
+        <div class="stat-box">
+          <div class="stat-icon">🎮</div>
+          <div class="stat-value" id="playerStats">You: 0</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-icon" id="opponentIcon">🤖</div>
+          <div class="stat-value" id="opponentStats">AI: 0</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-icon">🤝</div>
+          <div class="stat-value" id="drawStats">Draw: 0</div>
+        </div>
+      </div>
+
+      <!-- Game Board -->
+      <div class="game-board" id="gameBoard" style="display: none">
+        <div class="cell" data-index="0"></div>
+        <div class="cell" data-index="1"></div>
+        <div class="cell" data-index="2"></div>
+        <div class="cell" data-index="3"></div>
+        <div class="cell" data-index="4"></div>
+        <div class="cell" data-index="5"></div>
+        <div class="cell" data-index="6"></div>
+        <div class="cell" data-index="7"></div>
+        <div class="cell" data-index="8"></div>
+      </div>
+
+      <!-- Current Status -->
+      <div class="status-display" id="statusDisplay" style="display: none">
+        <div class="status-text" id="statusText">Your Turn</div>
+      </div>
+
+      <!-- Controls -->
+      <div class="controls" id="controls" style="display: none">
+        <button class="btn btn-primary" id="newGameBtn">New Game</button>
+        <button class="btn btn-secondary" id="backBtn">Back to Menu</button>
+      </div>
+    </div>
+
+    <!-- Winner Modal -->
+    <div class="modal hidden" id="winnerModal">
+      <div class="modal-content">
+        <div class="winner-animation" id="winnerAnimation">🎉</div>
+        <h2 id="winnerTitle">You Win!</h2>
+        <p id="winnerMessage">Congratulations!</p>
+        <button class="btn btn-primary" onclick="newGame()">Play Again</button>
+      </div>
+    </div>
+
+    <script src="game.js"></script>
+  </body>
+</html>
