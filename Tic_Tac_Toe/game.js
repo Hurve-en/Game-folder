@@ -1,10 +1,90 @@
+// Animated background canvas
+const canvas = document.getElementById("bgCanvas");
+const ctx = canvas.getContext("2d");
+
+function resizeCanvas() {
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+}
+resizeCanvas();
+window.addEventListener("resize", resizeCanvas);
+
+let particles = [];
+let time = 0;
+
+class Particle {
+  constructor() {
+    this.x = Math.random() * canvas.width;
+    this.y = Math.random() * canvas.height;
+    this.vx = (Math.random() - 0.5) * 2;
+    this.vy = (Math.random() - 0.5) * 2;
+    this.life = 1;
+    this.size = Math.random() * 2 + 1;
+    this.color = ["#ff006e", "#00d9ff", "#ffd700"][
+      Math.floor(Math.random() * 3)
+    ];
+  }
+
+  update() {
+    this.x += this.vx;
+    this.y += this.vy;
+    this.life -= 0.01;
+
+    if (this.x < 0 || this.x > canvas.width) this.vx *= -1;
+    if (this.y < 0 || this.y > canvas.height) this.vy *= -1;
+  }
+
+  draw() {
+    ctx.fillStyle = this.color;
+    ctx.globalAlpha = this.life * 0.5;
+    ctx.beginPath();
+    ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.globalAlpha = 1;
+  }
+}
+
+function animateBackground() {
+  ctx.fillStyle = "#0a0e27";
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+  // Draw grid
+  ctx.strokeStyle = "rgba(0, 217, 255, 0.05)";
+  ctx.lineWidth = 1;
+  for (let i = 0; i < canvas.width; i += 50) {
+    ctx.beginPath();
+    ctx.moveTo(i, 0);
+    ctx.lineTo(i, canvas.height);
+    ctx.stroke();
+  }
+  for (let i = 0; i < canvas.height; i += 50) {
+    ctx.beginPath();
+    ctx.moveTo(0, i);
+    ctx.lineTo(canvas.width, i);
+    ctx.stroke();
+  }
+
+  // Update and draw particles
+  if (particles.length < 50) {
+    particles.push(new Particle());
+  }
+
+  particles.forEach((p, i) => {
+    p.update();
+    p.draw();
+    if (p.life <= 0) particles.splice(i, 1);
+  });
+
+  requestAnimationFrame(animateBackground);
+}
+animateBackground();
+
 // Game State
-let gameMode = null; // 'ai' or '2player'
+let gameMode = null;
 let currentPlayer = "X";
 let board = ["", "", "", "", "", "", "", "", ""];
-let gameActive = true;
-let playerStats = { wins: 0, losses: 0, draws: 0 };
-let opponent = "AI"; // AI or Player 2
+let gameActive = false;
+let scores = { x: 0, o: 0 };
 
 const winningConditions = [
   [0, 1, 2],
@@ -17,96 +97,100 @@ const winningConditions = [
   [2, 4, 6],
 ];
 
-// Load stats
-function loadStats() {
-  const saved = localStorage.getItem("tictactoeStats");
-  if (saved) {
-    playerStats = JSON.parse(saved);
-    updateStatsDisplay();
-  }
+// Load scores
+function loadScores() {
+  const saved = localStorage.getItem("neonClashScores");
+  if (saved) scores = JSON.parse(saved);
+  updateScoreDisplay();
 }
-loadStats();
+loadScores();
 
-// Event Listeners
+// DOM Elements
+const menuScreen = document.getElementById("menuScreen");
+const gameScreen = document.getElementById("gameScreen");
+const winScreen = document.getElementById("winScreen");
+const gameBoard = document.getElementById("gameBoard");
+const statusText = document.getElementById("statusText");
+const cells = document.querySelectorAll(".cell");
+
+// Menu buttons
 document
-  .getElementById("vsAiBtn")
-  .addEventListener("click", () => startMode("ai"));
+  .getElementById("aiMode")
+  .addEventListener("click", () => startGame("ai"));
 document
-  .getElementById("vsPcBtn")
-  .addEventListener("click", () => startMode("2player"));
+  .getElementById("playerMode")
+  .addEventListener("click", () => startGame("2p"));
+
+// Game buttons
 document.getElementById("newGameBtn").addEventListener("click", newGame);
+document.getElementById("menuBtn").addEventListener("click", backToMenu);
+document.getElementById("playAgainBtn").addEventListener("click", newGame);
 document.getElementById("backBtn").addEventListener("click", backToMenu);
 
-document.querySelectorAll(".cell").forEach((cell) => {
-  cell.addEventListener("click", (e) => handleCellClick(e.target));
+// Cell clicks
+cells.forEach((cell) => {
+  cell.addEventListener("click", (e) => {
+    if (!gameActive) return;
+    const index = parseInt(e.target.getAttribute("data-index"));
+    if (board[index] !== "") return;
+
+    makeMove(index, "X");
+
+    if (!gameActive) return;
+
+    if (gameMode === "ai") {
+      setTimeout(() => {
+        const aiMove = getBestMove();
+        makeMove(aiMove, "O");
+      }, 500);
+    }
+  });
 });
 
-function startMode(mode) {
+function startGame(mode) {
   gameMode = mode;
-  opponent = mode === "ai" ? "AI" : "Player 2";
-  document.getElementById("opponentIcon").textContent =
-    mode === "ai" ? "🤖" : "👥";
-  document.getElementById("modeSelector").style.display = "none";
-  document.getElementById("statsContainer").style.display = "flex";
-  document.getElementById("gameBoard").style.display = "grid";
-  document.getElementById("statusDisplay").style.display = "block";
-  document.getElementById("controls").style.display = "flex";
+  menuScreen.classList.add("hidden");
+  gameScreen.classList.remove("hidden");
+  winScreen.classList.add("hidden");
+
+  document.getElementById("p2Name").textContent =
+    mode === "ai" ? "BOT" : "PLAYER 2";
   newGame();
 }
 
-function backToMenu() {
-  document.getElementById("modeSelector").style.display = "flex";
-  document.getElementById("statsContainer").style.display = "none";
-  document.getElementById("gameBoard").style.display = "none";
-  document.getElementById("statusDisplay").style.display = "none";
-  document.getElementById("controls").style.display = "none";
-  gameMode = null;
-}
+function newGame() {
+  currentPlayer = "X";
+  board = ["", "", "", "", "", "", "", "", ""];
+  gameActive = true;
+  winScreen.classList.add("hidden");
+  gameScreen.classList.remove("hidden");
 
-function handleCellClick(cell) {
-  if (!gameActive || gameMode === null) return;
+  cells.forEach((cell) => {
+    cell.textContent = "";
+    cell.className = "cell";
+  });
 
-  const index = parseInt(cell.getAttribute("data-index"));
-
-  // Check if cell is taken
-  if (board[index] !== "") return;
-
-  // Player move
-  makeMove(index, "X");
-
-  if (!gameActive) return;
-
-  // AI or Player 2 move
-  if (gameMode === "ai") {
-    setTimeout(() => {
-      const aiMove = getBestMove();
-      makeMove(aiMove, "O");
-    }, 500);
-  }
+  updateStatus();
 }
 
 function makeMove(index, player) {
   board[index] = player;
-  const cell = document.querySelector(`[data-index="${index}"]`);
-  cell.textContent = player === "X" ? "❌" : "⭕";
-  cell.classList.add("taken", "active");
+  const cell = cells[index];
+  cell.textContent = player;
+  cell.classList.add("taken", `cell-${player.toLowerCase()}`);
 
-  // Play sound
-  playMoveSound();
+  playSound(200, 100);
 
-  // Check for winner
   if (checkWinner(player)) {
     endGame(player);
     return;
   }
 
-  // Check for draw
   if (board.every((c) => c !== "")) {
     endGame("draw");
     return;
   }
 
-  // Switch player
   currentPlayer = currentPlayer === "X" ? "O" : "X";
   updateStatus();
 }
@@ -115,29 +199,27 @@ function checkWinner(player) {
   for (let condition of winningConditions) {
     const [a, b, c] = condition;
     if (board[a] === player && board[b] === player && board[c] === player) {
-      highlightWinningCells(condition);
+      highlightWinning(condition);
       return true;
     }
   }
   return false;
 }
 
-function highlightWinningCells(condition) {
-  condition.forEach((index) => {
-    const cell = document.querySelector(`[data-index="${index}"]`);
-    cell.classList.add("win");
+function highlightWinning(condition) {
+  condition.forEach((i) => {
+    cells[i].classList.add("win");
   });
 }
 
 function getBestMove() {
-  // Minimax algorithm with depth limit
   let bestScore = -Infinity;
   let bestMove = null;
 
-  for (let i = 0; i < board.length; i++) {
+  for (let i = 0; i < 9; i++) {
     if (board[i] === "") {
       board[i] = "O";
-      let score = minimax(board, 0, false, 6);
+      const score = minimax(board, 0, false);
       board[i] = "";
 
       if (score > bestScore) {
@@ -147,15 +229,10 @@ function getBestMove() {
     }
   }
 
-  return bestMove || board.findIndex((c) => c === "");
+  return bestMove;
 }
 
-function minimax(tempBoard, depth, isMaximizing, maxDepth) {
-  if (depth >= maxDepth) {
-    return evaluateBoard(tempBoard);
-  }
-
-  // Check terminal states
+function minimax(tempBoard, depth, isMaximizing) {
   for (let condition of winningConditions) {
     const [a, b, c] = condition;
     if (tempBoard[a] === "O" && tempBoard[b] === "O" && tempBoard[c] === "O")
@@ -167,170 +244,92 @@ function minimax(tempBoard, depth, isMaximizing, maxDepth) {
   if (tempBoard.every((c) => c !== "")) return 0;
 
   if (isMaximizing) {
-    let bestScore = -Infinity;
-    for (let i = 0; i < tempBoard.length; i++) {
+    let best = -Infinity;
+    for (let i = 0; i < 9; i++) {
       if (tempBoard[i] === "") {
         tempBoard[i] = "O";
-        let score = minimax(tempBoard, depth + 1, false, maxDepth);
+        best = Math.max(best, minimax(tempBoard, depth + 1, false));
         tempBoard[i] = "";
-        bestScore = Math.max(score, bestScore);
       }
     }
-    return bestScore;
+    return best;
   } else {
-    let bestScore = Infinity;
-    for (let i = 0; i < tempBoard.length; i++) {
+    let best = Infinity;
+    for (let i = 0; i < 9; i++) {
       if (tempBoard[i] === "") {
         tempBoard[i] = "X";
-        let score = minimax(tempBoard, depth + 1, true, maxDepth);
+        best = Math.min(best, minimax(tempBoard, depth + 1, true));
         tempBoard[i] = "";
-        bestScore = Math.min(score, bestScore);
       }
     }
-    return bestScore;
+    return best;
   }
-}
-
-function evaluateBoard(tempBoard) {
-  let score = 0;
-  for (let condition of winningConditions) {
-    const [a, b, c] = condition;
-    const cells = [tempBoard[a], tempBoard[b], tempBoard[c]];
-
-    if (cells.filter((c) => c === "O").length === 2) score += 5;
-    if (cells.filter((c) => c === "X").length === 2) score -= 5;
-    if (cells.filter((c) => c === "O").length === 1) score += 1;
-    if (cells.filter((c) => c === "X").length === 1) score -= 1;
-  }
-  return score;
 }
 
 function endGame(winner) {
   gameActive = false;
 
   if (winner === "X") {
-    playerStats.wins++;
-    showWinner("You Win!", "🎉", "Excellent play!");
-    playWinSound();
+    scores.x++;
+    showWinner("YOU WIN!", "🎯", "PERFECT PLAY");
+    playSound(600, 200);
   } else if (winner === "O") {
-    playerStats.losses++;
-    showWinner(`${opponent} Wins!`, "😢", "Better luck next time!");
-    playLoseSound();
+    scores.o++;
+    showWinner("BOT WINS!", "🤖", "TRY AGAIN");
+    playSound(300, 200);
   } else {
-    playerStats.draws++;
-    showWinner("Draw!", "🤝", "Well played!");
-    playDrawSound();
+    showWinner("DRAW!", "⚔️", "WELL PLAYED");
+    playSound(400, 150);
   }
 
-  localStorage.setItem("tictactoeStats", JSON.stringify(playerStats));
-  updateStatsDisplay();
+  localStorage.setItem("neonClashScores", JSON.stringify(scores));
+  updateScoreDisplay();
+}
+
+function showWinner(title, emoji, subtitle) {
+  document.getElementById("winTitle").textContent = title;
+  document.getElementById("winAnimation").textContent = emoji;
+  document.getElementById("winSubtitle").textContent = subtitle;
+  gameScreen.classList.add("hidden");
+  winScreen.classList.remove("hidden");
 }
 
 function updateStatus() {
-  const statusText = document.getElementById("statusText");
-  if (currentPlayer === "X") {
-    statusText.textContent = "Your Turn";
-  } else {
-    statusText.textContent = `${opponent} Turn`;
-  }
+  statusText.textContent =
+    currentPlayer === "X"
+      ? "YOUR TURN"
+      : gameMode === "ai"
+        ? "BOT THINKING..."
+        : "PLAYER 2 TURN";
 }
 
-function updateStatsDisplay() {
-  document.getElementById("playerStats").textContent =
-    `You: ${playerStats.wins}`;
-  document.getElementById("opponentStats").textContent =
-    `${opponent}: ${playerStats.losses}`;
-  document.getElementById("drawStats").textContent =
-    `Draw: ${playerStats.draws}`;
+function updateScoreDisplay() {
+  document.getElementById("p1Score").textContent = scores.x;
+  document.getElementById("p2Score").textContent = scores.o;
 }
 
-function showWinner(title, emoji, message) {
-  document.getElementById("winnerTitle").textContent = title;
-  document.getElementById("winnerAnimation").textContent = emoji;
-  document.getElementById("winnerMessage").textContent = message;
-  document.getElementById("winnerModal").classList.remove("hidden");
+function backToMenu() {
+  gameScreen.classList.add("hidden");
+  winScreen.classList.add("hidden");
+  menuScreen.classList.remove("hidden");
+  gameActive = false;
 }
 
-function newGame() {
-  currentPlayer = "X";
-  board = ["", "", "", "", "", "", "", "", ""];
-  gameActive = true;
-  document.getElementById("winnerModal").classList.add("hidden");
-
-  document.querySelectorAll(".cell").forEach((cell) => {
-    cell.textContent = "";
-    cell.className = "cell";
-  });
-
-  updateStatus();
-}
-
-// Sound Effects
-function playMoveSound() {
+function playSound(freq, duration) {
   try {
     const ctx = new (window.AudioContext || window.webkitAudioContext)();
     const osc = ctx.createOscillator();
     const gain = ctx.createGain();
     osc.connect(gain);
     gain.connect(ctx.destination);
-    osc.frequency.value = 600;
+    osc.frequency.value = freq;
     osc.type = "sine";
-    gain.gain.setValueAtTime(0.2, ctx.currentTime);
-    gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.1);
+    gain.gain.setValueAtTime(0.1, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(
+      0.01,
+      ctx.currentTime + duration / 1000,
+    );
     osc.start(ctx.currentTime);
-    osc.stop(ctx.currentTime + 0.1);
-  } catch (e) {}
-}
-
-function playWinSound() {
-  try {
-    const ctx = new (window.AudioContext || window.webkitAudioContext)();
-    const notes = [523.25, 659.25, 783.99];
-    notes.forEach((freq, i) => {
-      const osc = ctx.createOscillator();
-      const gain = ctx.createGain();
-      osc.connect(gain);
-      gain.connect(ctx.destination);
-      osc.frequency.value = freq;
-      osc.type = "sine";
-      const start = ctx.currentTime + i * 0.1;
-      gain.gain.setValueAtTime(0.2, start);
-      gain.gain.exponentialRampToValueAtTime(0.01, start + 0.2);
-      osc.start(start);
-      osc.stop(start + 0.2);
-    });
-  } catch (e) {}
-}
-
-function playLoseSound() {
-  try {
-    const ctx = new (window.AudioContext || window.webkitAudioContext)();
-    const osc = ctx.createOscillator();
-    const gain = ctx.createGain();
-    osc.connect(gain);
-    gain.connect(ctx.destination);
-    osc.frequency.setValueAtTime(400, ctx.currentTime);
-    osc.frequency.linearRampToValueAtTime(200, ctx.currentTime + 0.4);
-    osc.type = "sine";
-    gain.gain.setValueAtTime(0.2, ctx.currentTime);
-    gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.4);
-    osc.start(ctx.currentTime);
-    osc.stop(ctx.currentTime + 0.4);
-  } catch (e) {}
-}
-
-function playDrawSound() {
-  try {
-    const ctx = new (window.AudioContext || window.webkitAudioContext)();
-    const osc = ctx.createOscillator();
-    const gain = ctx.createGain();
-    osc.connect(gain);
-    gain.connect(ctx.destination);
-    osc.frequency.value = 500;
-    osc.type = "sine";
-    gain.gain.setValueAtTime(0.2, ctx.currentTime);
-    gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.3);
-    osc.start(ctx.currentTime);
-    osc.stop(ctx.currentTime + 0.3);
+    osc.stop(ctx.currentTime + duration / 1000);
   } catch (e) {}
 }

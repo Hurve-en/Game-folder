@@ -3,81 +3,99 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Ultimate Tic Tac Toe - AI Edition</title>
+    <title>NEON CLASH - Ultimate Tic Tac Toe</title>
     <link rel="stylesheet" href="style.css" />
   </head>
   <body>
-    <div class="background">
-      <div class="stars"></div>
-      <div class="gradient"></div>
-    </div>
+    <canvas id="bgCanvas"></canvas>
 
     <div class="container">
-      <div class="header">
-        <h1 class="title">⚔️ ULTIMATE TIC TAC TOE ⚔️</h1>
-        <p class="subtitle">Challenge the AI or Play 2-Player</p>
-      </div>
+      <!-- Menu Screen -->
+      <div class="screen" id="menuScreen">
+        <div class="menu-content">
+          <div class="logo">
+            <div class="logo-x">X</div>
+            <div class="logo-vs">VS</div>
+            <div class="logo-o">O</div>
+          </div>
+          <h1 class="neon-title">NEON CLASH</h1>
+          <p class="tagline">The Ultimate Digital Battle</p>
 
-      <!-- Mode Selection -->
-      <div class="mode-selector" id="modeSelector">
-        <button class="mode-btn" id="vsAiBtn">
-          <div class="mode-icon">🤖</div>
-          <div class="mode-text">Play vs AI</div>
-        </button>
-        <button class="mode-btn" id="vsPcBtn">
-          <div class="mode-icon">👥</div>
-          <div class="mode-text">2 Player</div>
-        </button>
-      </div>
-
-      <!-- Game Stats -->
-      <div class="stats-container" id="statsContainer" style="display: none">
-        <div class="stat-box">
-          <div class="stat-icon">🎮</div>
-          <div class="stat-value" id="playerStats">You: 0</div>
+          <div class="mode-grid">
+            <div class="mode-card" id="aiMode">
+              <div class="mode-glow"></div>
+              <div class="mode-content">
+                <div class="mode-emoji">🤖</div>
+                <h3>FIGHT BOT</h3>
+                <p>Challenge the CPU</p>
+              </div>
+            </div>
+            <div class="mode-card" id="playerMode">
+              <div class="mode-glow"></div>
+              <div class="mode-content">
+                <div class="mode-emoji">⚡</div>
+                <h3>DUEL</h3>
+                <p>1v1 Battle</p>
+              </div>
+            </div>
+          </div>
         </div>
-        <div class="stat-box">
-          <div class="stat-icon" id="opponentIcon">🤖</div>
-          <div class="stat-value" id="opponentStats">AI: 0</div>
+      </div>
+
+      <!-- Game Screen -->
+      <div class="screen hidden" id="gameScreen">
+        <div class="game-header">
+          <div class="player-display">
+            <div class="player p1">
+              <div class="player-symbol">X</div>
+              <div class="player-name" id="p1Name">YOU</div>
+              <div class="player-score" id="p1Score">0</div>
+            </div>
+            <div class="vs-indicator" id="vsIndicator">VS</div>
+            <div class="player p2">
+              <div class="player-symbol o">O</div>
+              <div class="player-name" id="p2Name">BOT</div>
+              <div class="player-score" id="p2Score">0</div>
+            </div>
+          </div>
+          <div class="status-bar" id="statusBar">
+            <div class="status-text" id="statusText">Your Turn</div>
+          </div>
         </div>
-        <div class="stat-box">
-          <div class="stat-icon">🤝</div>
-          <div class="stat-value" id="drawStats">Draw: 0</div>
+
+        <div class="game-board" id="gameBoard">
+          <div class="cell" data-index="0"></div>
+          <div class="cell" data-index="1"></div>
+          <div class="cell" data-index="2"></div>
+          <div class="cell" data-index="3"></div>
+          <div class="cell" data-index="4"></div>
+          <div class="cell" data-index="5"></div>
+          <div class="cell" data-index="6"></div>
+          <div class="cell" data-index="7"></div>
+          <div class="cell" data-index="8"></div>
+        </div>
+
+        <div class="game-controls">
+          <button class="btn-custom" id="newGameBtn">⟳ NEW GAME</button>
+          <button class="btn-custom secondary" id="menuBtn">✕ MENU</button>
         </div>
       </div>
 
-      <!-- Game Board -->
-      <div class="game-board" id="gameBoard" style="display: none">
-        <div class="cell" data-index="0"></div>
-        <div class="cell" data-index="1"></div>
-        <div class="cell" data-index="2"></div>
-        <div class="cell" data-index="3"></div>
-        <div class="cell" data-index="4"></div>
-        <div class="cell" data-index="5"></div>
-        <div class="cell" data-index="6"></div>
-        <div class="cell" data-index="7"></div>
-        <div class="cell" data-index="8"></div>
-      </div>
-
-      <!-- Current Status -->
-      <div class="status-display" id="statusDisplay" style="display: none">
-        <div class="status-text" id="statusText">Your Turn</div>
-      </div>
-
-      <!-- Controls -->
-      <div class="controls" id="controls" style="display: none">
-        <button class="btn btn-primary" id="newGameBtn">New Game</button>
-        <button class="btn btn-secondary" id="backBtn">Back to Menu</button>
-      </div>
-    </div>
-
-    <!-- Winner Modal -->
-    <div class="modal hidden" id="winnerModal">
-      <div class="modal-content">
-        <div class="winner-animation" id="winnerAnimation">🎉</div>
-        <h2 id="winnerTitle">You Win!</h2>
-        <p id="winnerMessage">Congratulations!</p>
-        <button class="btn btn-primary" onclick="newGame()">Play Again</button>
+      <!-- Win Screen -->
+      <div class="screen hidden" id="winScreen">
+        <div class="win-content">
+          <div class="win-animation" id="winAnimation">🎯</div>
+          <h2 class="win-title" id="winTitle">YOU WIN!</h2>
+          <p class="win-subtitle" id="winSubtitle">Flawless Victory</p>
+          <div class="win-stats">
+            <div class="stat" id="winStat1">Round</div>
+            <div class="stat" id="winStat2">Perfect Play</div>
+          </div>
+          <div class="win-buttons">
+            <button class="btn-custom" id="playAgainBtn">PLAY AGAIN</button>
+            <button class="btn-custom secondary" id="backBtn">BACK</button>
+          </div>
+        </div>
       </div>
     </div>
 
