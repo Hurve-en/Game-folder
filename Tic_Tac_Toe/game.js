@@ -1,84 +1,3 @@
-// Animated background canvas
-const canvas = document.getElementById("bgCanvas");
-const ctx = canvas.getContext("2d");
-
-function resizeCanvas() {
-  canvas.width = window.innerWidth;
-  canvas.height = window.innerHeight;
-}
-resizeCanvas();
-window.addEventListener("resize", resizeCanvas);
-
-let particles = [];
-let time = 0;
-
-class Particle {
-  constructor() {
-    this.x = Math.random() * canvas.width;
-    this.y = Math.random() * canvas.height;
-    this.vx = (Math.random() - 0.5) * 2;
-    this.vy = (Math.random() - 0.5) * 2;
-    this.life = 1;
-    this.size = Math.random() * 2 + 1;
-    this.color = ["#ff006e", "#00d9ff", "#ffd700"][
-      Math.floor(Math.random() * 3)
-    ];
-  }
-
-  update() {
-    this.x += this.vx;
-    this.y += this.vy;
-    this.life -= 0.01;
-
-    if (this.x < 0 || this.x > canvas.width) this.vx *= -1;
-    if (this.y < 0 || this.y > canvas.height) this.vy *= -1;
-  }
-
-  draw() {
-    ctx.fillStyle = this.color;
-    ctx.globalAlpha = this.life * 0.5;
-    ctx.beginPath();
-    ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.globalAlpha = 1;
-  }
-}
-
-function animateBackground() {
-  ctx.fillStyle = "#0a0e27";
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-  // Draw grid
-  ctx.strokeStyle = "rgba(0, 217, 255, 0.05)";
-  ctx.lineWidth = 1;
-  for (let i = 0; i < canvas.width; i += 50) {
-    ctx.beginPath();
-    ctx.moveTo(i, 0);
-    ctx.lineTo(i, canvas.height);
-    ctx.stroke();
-  }
-  for (let i = 0; i < canvas.height; i += 50) {
-    ctx.beginPath();
-    ctx.moveTo(0, i);
-    ctx.lineTo(canvas.width, i);
-    ctx.stroke();
-  }
-
-  // Update and draw particles
-  if (particles.length < 50) {
-    particles.push(new Particle());
-  }
-
-  particles.forEach((p, i) => {
-    p.update();
-    p.draw();
-    if (p.life <= 0) particles.splice(i, 1);
-  });
-
-  requestAnimationFrame(animateBackground);
-}
-animateBackground();
-
 // Game State
 let gameMode = null;
 let currentPlayer = "X";
@@ -99,62 +18,62 @@ const winningConditions = [
 
 // Load scores
 function loadScores() {
-  const saved = localStorage.getItem("neonClashScores");
+  const saved = localStorage.getItem("tictactoeScores");
   if (saved) scores = JSON.parse(saved);
-  updateScoreDisplay();
+  updateScores();
 }
 loadScores();
 
-// DOM Elements
+// Screen management
 const menuScreen = document.getElementById("menuScreen");
 const gameScreen = document.getElementById("gameScreen");
-const winScreen = document.getElementById("winScreen");
-const gameBoard = document.getElementById("gameBoard");
-const statusText = document.getElementById("statusText");
-const cells = document.querySelectorAll(".cell");
+const resultScreen = document.getElementById("resultScreen");
+
+function showScreen(screen) {
+  menuScreen.classList.remove("active");
+  gameScreen.classList.remove("active");
+  resultScreen.classList.remove("active");
+  screen.classList.add("active");
+}
 
 // Menu buttons
 document
-  .getElementById("aiMode")
+  .getElementById("aiBtn")
   .addEventListener("click", () => startGame("ai"));
 document
-  .getElementById("playerMode")
+  .getElementById("playerBtn")
   .addEventListener("click", () => startGame("2p"));
 
-// Game buttons
+// Game controls
 document.getElementById("newGameBtn").addEventListener("click", newGame);
-document.getElementById("menuBtn").addEventListener("click", backToMenu);
-document.getElementById("playAgainBtn").addEventListener("click", newGame);
 document.getElementById("backBtn").addEventListener("click", backToMenu);
+document.getElementById("playAgainBtn").addEventListener("click", newGame);
+document.getElementById("menuBtn").addEventListener("click", backToMenu);
 
 // Cell clicks
-cells.forEach((cell) => {
-  cell.addEventListener("click", (e) => {
-    if (!gameActive) return;
-    const index = parseInt(e.target.getAttribute("data-index"));
-    if (board[index] !== "") return;
+const cells = document.querySelectorAll(".cell");
+cells.forEach((cell, index) => {
+  cell.addEventListener("click", () => {
+    if (!gameActive || board[index] !== "") return;
 
-    makeMove(index, "X");
+    playerMove(index);
 
     if (!gameActive) return;
 
     if (gameMode === "ai") {
       setTimeout(() => {
-        const aiMove = getBestMove();
-        makeMove(aiMove, "O");
-      }, 500);
+        const aiMove = findBestMove();
+        aiPlayMove(aiMove);
+      }, 600);
     }
   });
 });
 
 function startGame(mode) {
   gameMode = mode;
-  menuScreen.classList.add("hidden");
-  gameScreen.classList.remove("hidden");
-  winScreen.classList.add("hidden");
-
-  document.getElementById("p2Name").textContent =
-    mode === "ai" ? "BOT" : "PLAYER 2";
+  document.getElementById("p2Label").textContent =
+    mode === "ai" ? "COMPUTER" : "PLAYER 2";
+  showScreen(gameScreen);
   newGame();
 }
 
@@ -162,8 +81,6 @@ function newGame() {
   currentPlayer = "X";
   board = ["", "", "", "", "", "", "", "", ""];
   gameActive = true;
-  winScreen.classList.add("hidden");
-  gameScreen.classList.remove("hidden");
 
   cells.forEach((cell) => {
     cell.textContent = "";
@@ -173,13 +90,31 @@ function newGame() {
   updateStatus();
 }
 
+function playerMove(index) {
+  makeMove(index, "X");
+
+  if (gameActive) {
+    currentPlayer = "O";
+    updateStatus();
+  }
+}
+
+function aiPlayMove(index) {
+  makeMove(index, "O");
+
+  if (gameActive) {
+    currentPlayer = "X";
+    updateStatus();
+  }
+}
+
 function makeMove(index, player) {
   board[index] = player;
   const cell = cells[index];
   cell.textContent = player;
-  cell.classList.add("taken", `cell-${player.toLowerCase()}`);
+  cell.classList.add("taken", player === "X" ? "x-mark" : "o-mark");
 
-  playSound(200, 100);
+  playSound(300, 80);
 
   if (checkWinner(player)) {
     endGame(player);
@@ -188,31 +123,27 @@ function makeMove(index, player) {
 
   if (board.every((c) => c !== "")) {
     endGame("draw");
-    return;
   }
-
-  currentPlayer = currentPlayer === "X" ? "O" : "X";
-  updateStatus();
 }
 
 function checkWinner(player) {
   for (let condition of winningConditions) {
     const [a, b, c] = condition;
     if (board[a] === player && board[b] === player && board[c] === player) {
-      highlightWinning(condition);
+      highlightWinner(condition);
       return true;
     }
   }
   return false;
 }
 
-function highlightWinning(condition) {
+function highlightWinner(condition) {
   condition.forEach((i) => {
-    cells[i].classList.add("win");
+    cells[i].classList.add("winner");
   });
 }
 
-function getBestMove() {
+function findBestMove() {
   let bestScore = -Infinity;
   let bestMove = null;
 
@@ -229,10 +160,11 @@ function getBestMove() {
     }
   }
 
-  return bestMove;
+  return bestMove !== null ? bestMove : board.findIndex((c) => c === "");
 }
 
 function minimax(tempBoard, depth, isMaximizing) {
+  // Check terminal states
   for (let condition of winningConditions) {
     const [a, b, c] = condition;
     if (tempBoard[a] === "O" && tempBoard[b] === "O" && tempBoard[c] === "O")
@@ -266,55 +198,56 @@ function minimax(tempBoard, depth, isMaximizing) {
   }
 }
 
-function endGame(winner) {
+function endGame(result) {
   gameActive = false;
 
-  if (winner === "X") {
+  if (result === "X") {
     scores.x++;
-    showWinner("YOU WIN!", "🎯", "PERFECT PLAY");
-    playSound(600, 200);
-  } else if (winner === "O") {
+    showResult("You Win!", "Well played!", "✓");
+    playWinSound();
+  } else if (result === "O") {
     scores.o++;
-    showWinner("BOT WINS!", "🤖", "TRY AGAIN");
-    playSound(300, 200);
+    showResult("Computer Wins!", "Try again!", "✗");
+    playLoseSound();
   } else {
-    showWinner("DRAW!", "⚔️", "WELL PLAYED");
-    playSound(400, 150);
+    showResult("Draw!", "Well matched!", "-");
+    playDrawSound();
   }
 
-  localStorage.setItem("neonClashScores", JSON.stringify(scores));
-  updateScoreDisplay();
+  localStorage.setItem("tictactoeScores", JSON.stringify(scores));
+  updateScores();
 }
 
-function showWinner(title, emoji, subtitle) {
-  document.getElementById("winTitle").textContent = title;
-  document.getElementById("winAnimation").textContent = emoji;
-  document.getElementById("winSubtitle").textContent = subtitle;
-  gameScreen.classList.add("hidden");
-  winScreen.classList.remove("hidden");
+function showResult(title, subtitle, icon) {
+  document.getElementById("resultTitle").textContent = title;
+  document.getElementById("resultSubtitle").textContent = subtitle;
+  document.getElementById("resultIcon").textContent = icon;
+  document.getElementById("finalP1").textContent = scores.x;
+  document.getElementById("finalP2").textContent = scores.o;
+  showScreen(resultScreen);
 }
 
 function updateStatus() {
-  statusText.textContent =
-    currentPlayer === "X"
-      ? "YOUR TURN"
-      : gameMode === "ai"
-        ? "BOT THINKING..."
-        : "PLAYER 2 TURN";
+  const status = document.getElementById("statusText");
+  if (currentPlayer === "X") {
+    status.textContent = "Your Turn";
+  } else {
+    status.textContent =
+      gameMode === "ai" ? "Computer Thinking..." : "Player 2 Turn";
+  }
 }
 
-function updateScoreDisplay() {
+function updateScores() {
   document.getElementById("p1Score").textContent = scores.x;
   document.getElementById("p2Score").textContent = scores.o;
 }
 
 function backToMenu() {
-  gameScreen.classList.add("hidden");
-  winScreen.classList.add("hidden");
-  menuScreen.classList.remove("hidden");
   gameActive = false;
+  showScreen(menuScreen);
 }
 
+// Sound effects
 function playSound(freq, duration) {
   try {
     const ctx = new (window.AudioContext || window.webkitAudioContext)();
@@ -331,5 +264,58 @@ function playSound(freq, duration) {
     );
     osc.start(ctx.currentTime);
     osc.stop(ctx.currentTime + duration / 1000);
+  } catch (e) {}
+}
+
+function playWinSound() {
+  try {
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    const notes = [400, 500, 600];
+    notes.forEach((freq, i) => {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.frequency.value = freq;
+      osc.type = "sine";
+      const start = ctx.currentTime + i * 0.1;
+      gain.gain.setValueAtTime(0.1, start);
+      gain.gain.exponentialRampToValueAtTime(0.01, start + 0.15);
+      osc.start(start);
+      osc.stop(start + 0.15);
+    });
+  } catch (e) {}
+}
+
+function playLoseSound() {
+  try {
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.frequency.setValueAtTime(300, ctx.currentTime);
+    osc.frequency.linearRampToValueAtTime(200, ctx.currentTime + 0.3);
+    osc.type = "sine";
+    gain.gain.setValueAtTime(0.1, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.3);
+    osc.start(ctx.currentTime);
+    osc.stop(ctx.currentTime + 0.3);
+  } catch (e) {}
+}
+
+function playDrawSound() {
+  try {
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.frequency.value = 350;
+    osc.type = "sine";
+    gain.gain.setValueAtTime(0.1, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.2);
+    osc.start(ctx.currentTime);
+    osc.stop(ctx.currentTime + 0.2);
   } catch (e) {}
 }
