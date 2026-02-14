@@ -4,50 +4,89 @@
     <meta charset="UTF-8" />
     <meta
       name="viewport"
-      content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover"
+      content="width=device-width, initial-scale=1.0, user-scalable=no"
     />
-    <title>Snake Game</title>
+    <title>Enhanced Snake Game</title>
     <link rel="stylesheet" href="style.css" />
   </head>
   <body>
-    <div class="game-wrapper">
-      <div class="top-bar">
-        <h1>🐍 SNAKE</h1>
-        <div class="stats">
-          <div>Score: <span id="score">0</span></div>
-          <div>Best: <span id="best">0</span></div>
+    <div class="game-container">
+      <div class="top-section">
+        <div class="title-bar">
+          <h1>SNAKE GAME</h1>
+          <p class="subtitle">Enhanced Edition</p>
+        </div>
+
+        <div class="stats-panel">
+          <div class="stat">
+            <span class="stat-label">SCORE</span>
+            <span class="stat-value" id="score">0</span>
+          </div>
+          <div class="stat">
+            <span class="stat-label">LEVEL</span>
+            <span class="stat-value" id="level">1</span>
+          </div>
+          <div class="stat">
+            <span class="stat-label">BEST</span>
+            <span class="stat-value" id="best">0</span>
+          </div>
         </div>
       </div>
 
       <canvas id="gameCanvas"></canvas>
 
-      <div class="controls">
-        <button id="startBtn" class="btn">START</button>
-        <button id="pauseBtn" class="btn" disabled>PAUSE</button>
-        <button id="resetBtn" class="btn">RESET</button>
-      </div>
-
-      <div class="mobile-controls" id="mobileControls">
-        <button class="arrow-btn" id="upBtn">⬆️</button>
-        <div>
-          <button class="arrow-btn" id="leftBtn">⬅️</button>
-          <button class="arrow-btn" id="downBtn">⬇️</button>
-          <button class="arrow-btn" id="rightBtn">➡️</button>
+      <div class="bottom-section">
+        <div class="controls">
+          <button id="startBtn" class="btn btn-primary">START GAME</button>
+          <button id="pauseBtn" class="btn btn-secondary" disabled>
+            PAUSE
+          </button>
+          <button id="resetBtn" class="btn btn-secondary">RESET</button>
         </div>
-      </div>
 
-      <div class="instructions">
-        Desktop: Arrow Keys or WASD | Mobile: Use arrow buttons
+        <div class="mobile-controls" id="mobileControls">
+          <button class="arrow-btn" id="upBtn">▲</button>
+          <div>
+            <button class="arrow-btn" id="leftBtn">◀</button>
+            <button class="arrow-btn" id="downBtn">▼</button>
+            <button class="arrow-btn" id="rightBtn">▶</button>
+          </div>
+        </div>
+
+        <div class="info-panel">
+          <div class="info-item">
+            <span class="info-label">Controls:</span>
+            <span class="info-value">Arrow Keys or WASD</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">Power-ups:</span>
+            <span class="info-value"
+              >Gold Squares = +10pts | Silver = +5pts</span
+            >
+          </div>
+        </div>
       </div>
     </div>
 
     <div id="gameOverModal" class="modal hidden">
-      <div class="modal-box">
+      <div class="modal-content">
         <h2>GAME OVER</h2>
-        <p>Score: <span id="finalScore">0</span></p>
-        <p>Best: <span id="bestScore">0</span></p>
+        <div class="game-stats">
+          <div class="game-stat-item">
+            <span class="game-stat-label">Final Score</span>
+            <span class="game-stat-value" id="finalScore">0</span>
+          </div>
+          <div class="game-stat-item">
+            <span class="game-stat-label">Level Reached</span>
+            <span class="game-stat-value" id="finalLevel">1</span>
+          </div>
+          <div class="game-stat-item">
+            <span class="game-stat-label">Best Score</span>
+            <span class="game-stat-value" id="finalBest">0</span>
+          </div>
+        </div>
         <button
-          class="btn"
+          class="btn btn-primary"
           onclick="document.getElementById('startBtn').click()"
         >
           Play Again
