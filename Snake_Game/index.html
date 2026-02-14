@@ -2,91 +2,54 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta
-      name="viewport"
-      content="width=device-width, initial-scale=1.0, user-scalable=no"
-    />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Enhanced Snake Game</title>
     <link rel="stylesheet" href="style.css" />
   </head>
   <body>
-    <div class="game-container">
-      <div class="top-section">
-        <div class="title-bar">
-          <h1>SNAKE GAME</h1>
-          <p class="subtitle">Enhanced Edition</p>
-        </div>
-
-        <div class="stats-panel">
-          <div class="stat">
-            <span class="stat-label">SCORE</span>
-            <span class="stat-value" id="score">0</span>
+    <div class="wrapper">
+      <div class="header">
+        <h1>SNAKE GAME</h1>
+        <div class="stats">
+          <div class="stat-box">
+            <span class="label">Score</span>
+            <span class="value" id="score">0</span>
           </div>
-          <div class="stat">
-            <span class="stat-label">LEVEL</span>
-            <span class="stat-value" id="level">1</span>
+          <div class="stat-box">
+            <span class="label">Level</span>
+            <span class="value" id="level">1</span>
           </div>
-          <div class="stat">
-            <span class="stat-label">BEST</span>
-            <span class="stat-value" id="best">0</span>
+          <div class="stat-box">
+            <span class="label">Best</span>
+            <span class="value" id="best">0</span>
           </div>
         </div>
       </div>
 
-      <canvas id="gameCanvas"></canvas>
+      <canvas id="gameCanvas" width="600" height="400"></canvas>
 
-      <div class="bottom-section">
-        <div class="controls">
-          <button id="startBtn" class="btn btn-primary">START GAME</button>
-          <button id="pauseBtn" class="btn btn-secondary" disabled>
-            PAUSE
-          </button>
-          <button id="resetBtn" class="btn btn-secondary">RESET</button>
-        </div>
+      <div class="controls">
+        <button id="startBtn" class="btn primary">START</button>
+        <button id="pauseBtn" class="btn secondary" disabled>PAUSE</button>
+        <button id="resetBtn" class="btn secondary">RESET</button>
+      </div>
 
-        <div class="mobile-controls" id="mobileControls">
-          <button class="arrow-btn" id="upBtn">▲</button>
-          <div>
-            <button class="arrow-btn" id="leftBtn">◀</button>
-            <button class="arrow-btn" id="downBtn">▼</button>
-            <button class="arrow-btn" id="rightBtn">▶</button>
-          </div>
-        </div>
-
-        <div class="info-panel">
-          <div class="info-item">
-            <span class="info-label">Controls:</span>
-            <span class="info-value">Arrow Keys or WASD</span>
-          </div>
-          <div class="info-item">
-            <span class="info-label">Power-ups:</span>
-            <span class="info-value"
-              >Gold Squares = +10pts | Silver = +5pts</span
-            >
-          </div>
-        </div>
+      <div class="info">
+        <p>
+          Arrow Keys or WASD to move | Red = 5pts | Orange = 10pts | Blue =
+          25pts
+        </p>
       </div>
     </div>
 
     <div id="gameOverModal" class="modal hidden">
-      <div class="modal-content">
+      <div class="modal-box">
         <h2>GAME OVER</h2>
-        <div class="game-stats">
-          <div class="game-stat-item">
-            <span class="game-stat-label">Final Score</span>
-            <span class="game-stat-value" id="finalScore">0</span>
-          </div>
-          <div class="game-stat-item">
-            <span class="game-stat-label">Level Reached</span>
-            <span class="game-stat-value" id="finalLevel">1</span>
-          </div>
-          <div class="game-stat-item">
-            <span class="game-stat-label">Best Score</span>
-            <span class="game-stat-value" id="finalBest">0</span>
-          </div>
-        </div>
+        <p>Final Score: <span id="finalScore">0</span></p>
+        <p>Level: <span id="finalLevel">1</span></p>
+        <p>Best: <span id="finalBest">0</span></p>
         <button
-          class="btn btn-primary"
+          class="btn primary"
           onclick="document.getElementById('startBtn').click()"
         >
           Play Again
