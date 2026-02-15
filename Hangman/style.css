@@ -1,0 +1,383 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family:
+    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  background: linear-gradient(135deg, #f5f7fa 0%, #e9ecef 100%);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  padding: 20px;
+  color: #2c3e50;
+}
+
+.container {
+  background: white;
+  border-radius: 12px;
+  padding: 30px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  max-width: 1000px;
+  width: 100%;
+}
+
+.header {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.header h1 {
+  font-size: 44px;
+  font-weight: 700;
+  color: #2c3e50;
+  margin-bottom: 8px;
+  letter-spacing: 2px;
+}
+
+.subtitle {
+  font-size: 14px;
+  color: #7f8c8d;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.game-content {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 40px;
+  margin-bottom: 20px;
+}
+
+/* Hangman Section */
+.hangman-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 30px;
+}
+
+.hangman-drawing {
+  width: 200px;
+  height: 250px;
+  background: #f8f9fa;
+  border-radius: 8px;
+  padding: 10px;
+  border: 2px solid #e8eef5;
+}
+
+.hangman-drawing .hidden {
+  display: none;
+}
+
+.hangman-stats {
+  display: flex;
+  gap: 20px;
+  width: 100%;
+}
+
+.stat {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 16px;
+  background: #f8f9fa;
+  border-radius: 8px;
+  border: 2px solid #e8eef5;
+}
+
+.stat-label {
+  font-size: 12px;
+  color: #7f8c8d;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-weight: 600;
+}
+
+.stat-value {
+  font-size: 28px;
+  font-weight: 700;
+  color: #3498db;
+  font-family: monospace;
+}
+
+/* Game Section */
+.game-section {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.word-display {
+  background: #f8f9fa;
+  padding: 24px;
+  border-radius: 8px;
+  border: 2px solid #e8eef5;
+  text-align: center;
+}
+
+.word {
+  font-size: 32px;
+  font-weight: 700;
+  letter-spacing: 8px;
+  color: #2c3e50;
+  font-family: monospace;
+  margin-bottom: 12px;
+  word-break: break-all;
+}
+
+.word-category {
+  font-size: 13px;
+  color: #7f8c8d;
+  letter-spacing: 0.5px;
+}
+
+.guessed-section {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.guessed-label {
+  font-size: 12px;
+  color: #7f8c8d;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-weight: 600;
+}
+
+.guessed-letters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  min-height: 32px;
+}
+
+.guessed-letter {
+  display: inline-block;
+  padding: 6px 12px;
+  background: #ecf0f6;
+  border: 2px solid #e8eef5;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #2c3e50;
+}
+
+.guessed-letter.wrong {
+  background: #fde8e8;
+  border-color: #f5b7b7;
+  color: #c0392b;
+}
+
+/* Alphabet */
+.alphabet {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 8px;
+}
+
+.letter-btn {
+  padding: 10px;
+  font-size: 13px;
+  font-weight: 600;
+  background: white;
+  border: 2px solid #e8eef5;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s;
+  color: #2c3e50;
+  text-transform: uppercase;
+}
+
+.letter-btn:hover:not(:disabled) {
+  border-color: #3498db;
+  background: #ecf0f6;
+  transform: translateY(-2px);
+}
+
+.letter-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  background: #f8f9fa;
+}
+
+.letter-btn.correct {
+  background: #d4edda;
+  border-color: #28a745;
+  color: #155724;
+}
+
+.letter-btn.wrong {
+  background: #fde8e8;
+  border-color: #c0392b;
+  color: #c0392b;
+}
+
+/* Controls */
+.controls {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+}
+
+.btn {
+  padding: 12px 28px;
+  font-size: 14px;
+  font-weight: 600;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+.btn.primary {
+  background: #3498db;
+  color: white;
+  box-shadow: 0 2px 8px rgba(52, 152, 219, 0.2);
+}
+
+.btn.primary:hover {
+  background: #2980b9;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(52, 152, 219, 0.3);
+}
+
+.btn.secondary {
+  background: #ecf0f6;
+  color: #3498db;
+  border: 2px solid #e8eef5;
+}
+
+.btn.secondary:hover {
+  border-color: #3498db;
+  background: #e1ecf7;
+  transform: translateY(-2px);
+}
+
+.btn:active {
+  transform: translateY(0);
+}
+
+/* Modal */
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal.hidden {
+  display: none;
+}
+
+.modal-box {
+  background: white;
+  padding: 40px;
+  border-radius: 12px;
+  text-align: center;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+  max-width: 400px;
+  width: 90%;
+}
+
+.modal-box h2 {
+  font-size: 36px;
+  color: #2c3e50;
+  margin-bottom: 12px;
+  font-weight: 700;
+}
+
+.modal-box p {
+  font-size: 16px;
+  color: #7f8c8d;
+  margin-bottom: 16px;
+}
+
+.word-revealed {
+  font-size: 20px;
+  font-family: monospace;
+  color: #2c3e50;
+  font-weight: 700;
+  letter-spacing: 2px;
+  margin: 16px 0;
+}
+
+.result-stats {
+  padding: 16px;
+  background: #f8f9fa;
+  border-radius: 8px;
+  margin: 16px 0;
+}
+
+.modal-box .btn {
+  margin-top: 16px;
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+  .game-content {
+    grid-template-columns: 1fr;
+    gap: 30px;
+  }
+
+  .alphabet {
+    grid-template-columns: repeat(5, 1fr);
+  }
+}
+
+@media (max-width: 600px) {
+  .container {
+    padding: 20px;
+  }
+
+  .header h1 {
+    font-size: 32px;
+  }
+
+  .game-content {
+    gap: 20px;
+  }
+
+  .word {
+    font-size: 24px;
+    letter-spacing: 4px;
+  }
+
+  .alphabet {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 6px;
+  }
+
+  .letter-btn {
+    padding: 8px;
+    font-size: 12px;
+  }
+
+  .controls {
+    gap: 8px;
+  }
+
+  .btn {
+    padding: 10px 20px;
+    font-size: 12px;
+  }
+
+  .hangman-drawing {
+    width: 150px;
+    height: 200px;
+  }
+}

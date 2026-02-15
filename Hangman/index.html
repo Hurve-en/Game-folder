@@ -1,0 +1,210 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Hangman Game</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <h1>HANGMAN</h1>
+        <p class="subtitle">Guess the Word</p>
+      </div>
+
+      <div class="game-content">
+        <!-- Left: Hangman Drawing -->
+        <div class="hangman-section">
+          <svg class="hangman-drawing" viewBox="0 0 200 250">
+            <!-- Gallows -->
+            <line
+              x1="10"
+              y1="230"
+              x2="150"
+              y2="230"
+              stroke="#2c3e50"
+              stroke-width="4"
+            />
+            <line
+              x1="50"
+              y1="230"
+              x2="50"
+              y2="20"
+              stroke="#2c3e50"
+              stroke-width="4"
+            />
+            <line
+              x1="50"
+              y1="20"
+              x2="130"
+              y2="20"
+              stroke="#2c3e50"
+              stroke-width="4"
+            />
+            <line
+              x1="130"
+              y1="20"
+              x2="130"
+              y2="50"
+              stroke="#2c3e50"
+              stroke-width="4"
+            />
+
+            <!-- Head -->
+            <circle
+              id="head"
+              cx="130"
+              cy="70"
+              r="20"
+              stroke="#2c3e50"
+              stroke-width="4"
+              fill="none"
+              class="hidden"
+            />
+
+            <!-- Body -->
+            <line
+              id="body"
+              x1="130"
+              y1="90"
+              x2="130"
+              y2="150"
+              stroke="#2c3e50"
+              stroke-width="4"
+              class="hidden"
+            />
+
+            <!-- Left Arm -->
+            <line
+              id="leftArm"
+              x1="130"
+              y1="110"
+              x2="100"
+              y2="130"
+              stroke="#2c3e50"
+              stroke-width="4"
+              class="hidden"
+            />
+
+            <!-- Right Arm -->
+            <line
+              id="rightArm"
+              x1="130"
+              y1="110"
+              x2="160"
+              y2="130"
+              stroke="#2c3e50"
+              stroke-width="4"
+              class="hidden"
+            />
+
+            <!-- Left Leg -->
+            <line
+              id="leftLeg"
+              x1="130"
+              y1="150"
+              x2="110"
+              y2="180"
+              stroke="#2c3e50"
+              stroke-width="4"
+              class="hidden"
+            />
+
+            <!-- Right Leg -->
+            <line
+              id="rightLeg"
+              x1="130"
+              y1="150"
+              x2="150"
+              y2="180"
+              stroke="#2c3e50"
+              stroke-width="4"
+              class="hidden"
+            />
+          </svg>
+
+          <div class="hangman-stats">
+            <div class="stat">
+              <span class="stat-label">Guesses Left</span>
+              <span class="stat-value" id="guessesLeft">6</span>
+            </div>
+            <div class="stat">
+              <span class="stat-label">Wins</span>
+              <span class="stat-value" id="wins">0</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right: Game Area -->
+        <div class="game-section">
+          <!-- Word Display -->
+          <div class="word-display">
+            <div class="word" id="wordDisplay">_ _ _ _ _ _</div>
+            <p class="word-category" id="category">Category: Animals</p>
+          </div>
+
+          <!-- Guessed Letters -->
+          <div class="guessed-section">
+            <p class="guessed-label">Guessed Letters:</p>
+            <div class="guessed-letters" id="guessedLetters"></div>
+          </div>
+
+          <!-- Alphabet Buttons -->
+          <div class="alphabet">
+            <button class="letter-btn" data-letter="A">A</button>
+            <button class="letter-btn" data-letter="B">B</button>
+            <button class="letter-btn" data-letter="C">C</button>
+            <button class="letter-btn" data-letter="D">D</button>
+            <button class="letter-btn" data-letter="E">E</button>
+            <button class="letter-btn" data-letter="F">F</button>
+            <button class="letter-btn" data-letter="G">G</button>
+            <button class="letter-btn" data-letter="H">H</button>
+            <button class="letter-btn" data-letter="I">I</button>
+            <button class="letter-btn" data-letter="J">J</button>
+            <button class="letter-btn" data-letter="K">K</button>
+            <button class="letter-btn" data-letter="L">L</button>
+            <button class="letter-btn" data-letter="M">M</button>
+            <button class="letter-btn" data-letter="N">N</button>
+            <button class="letter-btn" data-letter="O">O</button>
+            <button class="letter-btn" data-letter="P">P</button>
+            <button class="letter-btn" data-letter="Q">Q</button>
+            <button class="letter-btn" data-letter="R">R</button>
+            <button class="letter-btn" data-letter="S">S</button>
+            <button class="letter-btn" data-letter="T">T</button>
+            <button class="letter-btn" data-letter="U">U</button>
+            <button class="letter-btn" data-letter="V">V</button>
+            <button class="letter-btn" data-letter="W">W</button>
+            <button class="letter-btn" data-letter="X">X</button>
+            <button class="letter-btn" data-letter="Y">Y</button>
+            <button class="letter-btn" data-letter="Z">Z</button>
+          </div>
+
+          <!-- Controls -->
+          <div class="controls">
+            <button class="btn primary" id="newGameBtn">New Game</button>
+            <button class="btn secondary" id="hintBtn">Hint</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Game Over Modal -->
+    <div id="resultModal" class="modal hidden">
+      <div class="modal-box">
+        <h2 id="resultTitle">You Won!</h2>
+        <p id="resultMessage">Great job!</p>
+        <p class="word-revealed" id="revealedWord"></p>
+        <div class="result-stats">
+          <div class="stat">
+            <span class="stat-label">Total Wins</span>
+            <span class="stat-value" id="totalWins">0</span>
+          </div>
+        </div>
+        <button class="btn primary" onclick="newGame()">Play Again</button>
+      </div>
+    </div>
+
+    <script src="game.js"></script>
+  </body>
+</html>
