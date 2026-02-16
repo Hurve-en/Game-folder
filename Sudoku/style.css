@@ -1,0 +1,280 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: Arial, sans-serif;
+  background: linear-gradient(135deg, #f5f7fa, #e9ecef);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  padding: 20px;
+}
+
+.container {
+  background: white;
+  border-radius: 12px;
+  padding: 30px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  max-width: 500px;
+  width: 100%;
+}
+
+h1 {
+  text-align: center;
+  font-size: 36px;
+  color: #2c3e50;
+  margin-bottom: 20px;
+  letter-spacing: 2px;
+}
+
+.stats {
+  display: flex;
+  justify-content: space-around;
+  margin-bottom: 20px;
+  gap: 10px;
+}
+
+.stat-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 12px 20px;
+  background: #f8f9fa;
+  border-radius: 8px;
+  border: 2px solid #e8eef5;
+  flex: 1;
+}
+
+.stat-label {
+  font-size: 11px;
+  color: #7f8c8d;
+  text-transform: uppercase;
+  font-weight: 600;
+}
+
+.stat-value {
+  font-size: 20px;
+  font-weight: 700;
+  color: #3498db;
+  font-family: monospace;
+}
+
+.board {
+  display: grid;
+  grid-template-columns: repeat(9, 1fr);
+  gap: 0;
+  border: 3px solid #2c3e50;
+  margin-bottom: 20px;
+  background: white;
+  padding: 2px;
+}
+
+.cell {
+  width: 45px;
+  height: 45px;
+  border: 1px solid #bdc3c7;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  background: white;
+  color: #2c3e50;
+  transition: all 0.2s;
+}
+
+.cell:hover {
+  background: #ecf0f6;
+}
+
+.cell.selected {
+  background: #3498db;
+  color: white;
+}
+
+.cell.related {
+  background: #d4edda;
+}
+
+.cell.given {
+  background: #f0f0f0;
+  font-weight: 700;
+  cursor: default;
+}
+
+.cell.given:hover {
+  background: #f0f0f0;
+}
+
+/* Thick borders for 3x3 boxes */
+.cell:nth-child(3n) {
+  border-right: 3px solid #2c3e50;
+}
+
+.cell:nth-child(9n) {
+  border-right: none;
+}
+
+.cell:nth-child(n + 19):nth-child(-n + 27),
+.cell:nth-child(n + 55):nth-child(-n + 63) {
+  border-bottom: 3px solid #2c3e50;
+}
+
+.cell:nth-child(27),
+.cell:nth-child(54) {
+  border-bottom: 3px solid #2c3e50;
+}
+
+.input-panel {
+  margin-bottom: 20px;
+}
+
+.number-buttons {
+  display: grid;
+  grid-template-columns: repeat(9, 1fr);
+  gap: 6px;
+  margin-bottom: 10px;
+}
+
+.num-btn {
+  padding: 10px;
+  font-size: 13px;
+  font-weight: 600;
+  background: white;
+  border: 2px solid #e8eef5;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.num-btn:hover {
+  border-color: #3498db;
+  background: #ecf0f6;
+}
+
+.num-btn:active {
+  transform: translateY(-2px);
+}
+
+.delete-btn {
+  width: 100%;
+  padding: 10px;
+  background: #fde8e8;
+  border: 2px solid #f5b7b7;
+  border-radius: 6px;
+  color: #c0392b;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.delete-btn:hover {
+  background: #f5b7b7;
+}
+
+.buttons {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+}
+
+.btn {
+  padding: 12px 24px;
+  font-size: 14px;
+  font-weight: 600;
+  background: #3498db;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-transform: uppercase;
+}
+
+.btn:hover {
+  background: #2980b9;
+  transform: translateY(-2px);
+}
+
+.btn:active {
+  transform: translateY(0);
+}
+
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal.hidden {
+  display: none;
+}
+
+.modal-content {
+  background: white;
+  padding: 40px;
+  border-radius: 12px;
+  text-align: center;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+  max-width: 400px;
+  width: 90%;
+}
+
+.modal-content h2 {
+  font-size: 32px;
+  color: #2c3e50;
+  margin-bottom: 16px;
+}
+
+.modal-content p {
+  font-size: 16px;
+  color: #7f8c8d;
+  margin-bottom: 20px;
+}
+
+.modal-content .btn {
+  margin-top: 16px;
+}
+
+@media (max-width: 600px) {
+  .container {
+    padding: 20px;
+  }
+
+  h1 {
+    font-size: 28px;
+  }
+
+  .cell {
+    width: 40px;
+    height: 40px;
+    font-size: 14px;
+  }
+
+  .number-buttons {
+    grid-template-columns: repeat(9, 1fr);
+    gap: 4px;
+  }
+
+  .num-btn {
+    padding: 8px;
+    font-size: 12px;
+  }
+
+  .btn {
+    padding: 10px 16px;
+    font-size: 12px;
+  }
+}

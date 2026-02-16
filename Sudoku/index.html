@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sudoku Game</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div class="container">
+      <h1>SUDOKU</h1>
+
+      <div class="stats">
+        <div class="stat-item">
+          <span class="stat-label">Solved</span>
+          <span class="stat-value" id="solved">0/81</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-label">Mistakes</span>
+          <span class="stat-value" id="mistakes">0</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-label">Time</span>
+          <span class="stat-value" id="timer">00:00</span>
+        </div>
+      </div>
+
+      <div class="board" id="board"></div>
+
+      <div class="input-panel">
+        <div class="number-buttons">
+          <button class="num-btn" onclick="inputNumber(1)">1</button>
+          <button class="num-btn" onclick="inputNumber(2)">2</button>
+          <button class="num-btn" onclick="inputNumber(3)">3</button>
+          <button class="num-btn" onclick="inputNumber(4)">4</button>
+          <button class="num-btn" onclick="inputNumber(5)">5</button>
+          <button class="num-btn" onclick="inputNumber(6)">6</button>
+          <button class="num-btn" onclick="inputNumber(7)">7</button>
+          <button class="num-btn" onclick="inputNumber(8)">8</button>
+          <button class="num-btn" onclick="inputNumber(9)">9</button>
+        </div>
+        <button class="delete-btn" onclick="deleteNumber()">DELETE</button>
+      </div>
+
+      <div class="buttons">
+        <button class="btn" onclick="newGame()">New Game</button>
+        <button class="btn" onclick="resetPuzzle()">Reset</button>
+        <button class="btn" onclick="giveHint()">Hint</button>
+      </div>
+    </div>
+
+    <div id="winModal" class="modal hidden">
+      <div class="modal-content">
+        <h2>Puzzle Complete!</h2>
+        <p id="winStats"></p>
+        <button class="btn" onclick="newGame()">Next Puzzle</button>
+      </div>
+    </div>
+
+    <script src="game.js"></script>
+  </body>
+</html>
