@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Space Shooter</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <h1>SPACE SHOOTER</h1>
+        <div class="stats">
+          <div class="stat">
+            <span class="label">Score</span>
+            <span class="value" id="score">0</span>
+          </div>
+          <div class="stat">
+            <span class="label">Level</span>
+            <span class="value" id="level">1</span>
+          </div>
+          <div class="stat">
+            <span class="label">Lives</span>
+            <span class="value" id="lives">3</span>
+          </div>
+          <div class="stat">
+            <span class="label">Best</span>
+            <span class="value" id="best">0</span>
+          </div>
+        </div>
+      </div>
+
+      <canvas id="gameCanvas" width="800" height="500"></canvas>
+
+      <div class="controls">
+        <button id="startBtn" class="btn primary">START GAME</button>
+        <button id="pauseBtn" class="btn secondary" disabled>PAUSE</button>
+        <button id="resetBtn" class="btn secondary">RESET</button>
+      </div>
+
+      <div class="instructions">
+        <p>
+          Arrow Keys or WASD to Move | Space to Shoot | Destroy all enemies!
+        </p>
+      </div>
+    </div>
+
+    <!-- Game Over Modal -->
+    <div id="gameOverModal" class="modal hidden">
+      <div class="modal-box">
+        <h2 id="resultTitle">Game Over!</h2>
+        <div class="result-stats">
+          <div class="stat">
+            <span class="label">Final Score</span>
+            <span class="value" id="finalScore">0</span>
+          </div>
+          <div class="stat">
+            <span class="label">Level Reached</span>
+            <span class="value" id="finalLevel">1</span>
+          </div>
+          <div class="stat">
+            <span class="label">Best Score</span>
+            <span class="value" id="finalBest">0</span>
+          </div>
+        </div>
+        <button
+          class="btn primary"
+          onclick="document.getElementById('startBtn').click()"
+        >
+          Play Again
+        </button>
+      </div>
+    </div>
+
+    <script src="game.js"></script>
+  </body>
+</html>

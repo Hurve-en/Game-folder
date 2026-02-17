@@ -1,0 +1,264 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family:
+    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  padding: 20px;
+  color: #e0e0e0;
+}
+
+.container {
+  background: rgba(26, 26, 46, 0.9);
+  border-radius: 12px;
+  padding: 30px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+  max-width: 900px;
+  width: 100%;
+  border: 2px solid #0f3460;
+}
+
+.header {
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+.header h1 {
+  font-size: 44px;
+  font-weight: 700;
+  color: #00d4ff;
+  margin-bottom: 16px;
+  letter-spacing: 3px;
+  text-shadow: 0 0 10px rgba(0, 212, 255, 0.5);
+}
+
+.stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+}
+
+.stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 12px;
+  background: rgba(15, 52, 96, 0.5);
+  border-radius: 8px;
+  border: 1px solid #0f3460;
+}
+
+.label {
+  font-size: 11px;
+  color: #7f8c8d;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-weight: 600;
+}
+
+.value {
+  font-size: 24px;
+  font-weight: 700;
+  color: #00d4ff;
+  font-family: monospace;
+  text-shadow: 0 0 5px rgba(0, 212, 255, 0.3);
+}
+
+#gameCanvas {
+  width: 100%;
+  max-width: 800px;
+  height: auto;
+  border: 3px solid #0f3460;
+  border-radius: 8px;
+  display: block;
+  margin: 0 auto 24px;
+  background: linear-gradient(180deg, #0a0a14 0%, #1a1a2e 100%);
+}
+
+.controls {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  margin-bottom: 16px;
+}
+
+.btn {
+  padding: 12px 28px;
+  font-size: 14px;
+  font-weight: 600;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+.btn.primary {
+  background: linear-gradient(135deg, #00d4ff, #0099cc);
+  color: white;
+  box-shadow: 0 0 15px rgba(0, 212, 255, 0.3);
+}
+
+.btn.primary:hover:not(:disabled) {
+  box-shadow: 0 0 25px rgba(0, 212, 255, 0.6);
+  transform: translateY(-2px);
+}
+
+.btn.secondary {
+  background: rgba(15, 52, 96, 0.6);
+  color: #00d4ff;
+  border: 2px solid #0f3460;
+}
+
+.btn.secondary:hover:not(:disabled) {
+  border-color: #00d4ff;
+  box-shadow: 0 0 15px rgba(0, 212, 255, 0.3);
+  transform: translateY(-2px);
+}
+
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btn:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.instructions {
+  text-align: center;
+  font-size: 12px;
+  color: #7f8c8d;
+  padding: 12px;
+  background: rgba(15, 52, 96, 0.3);
+  border-radius: 6px;
+  border: 1px solid #0f3460;
+}
+
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.85);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal.hidden {
+  display: none;
+}
+
+.modal-box {
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+  padding: 40px;
+  border-radius: 12px;
+  text-align: center;
+  box-shadow: 0 0 30px rgba(0, 212, 255, 0.3);
+  max-width: 450px;
+  width: 90%;
+  border: 2px solid #0f3460;
+}
+
+.modal-box h2 {
+  font-size: 36px;
+  color: #00d4ff;
+  margin-bottom: 24px;
+  font-weight: 700;
+  text-shadow: 0 0 10px rgba(0, 212, 255, 0.5);
+}
+
+.result-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.result-stats .stat {
+  background: rgba(15, 52, 96, 0.7);
+  border: 1px solid #0f3460;
+}
+
+.modal-box .btn {
+  margin-top: 16px;
+}
+
+@media (max-width: 900px) {
+  .container {
+    padding: 20px;
+  }
+
+  .header h1 {
+    font-size: 32px;
+  }
+
+  .stats {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  #gameCanvas {
+    max-width: 100%;
+  }
+}
+
+@media (max-width: 600px) {
+  .container {
+    padding: 15px;
+  }
+
+  .header h1 {
+    font-size: 24px;
+  }
+
+  .stats {
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+
+  .stat {
+    padding: 8px;
+  }
+
+  .label {
+    font-size: 10px;
+  }
+
+  .value {
+    font-size: 18px;
+  }
+
+  .btn {
+    padding: 10px 20px;
+    font-size: 12px;
+  }
+
+  .instructions {
+    font-size: 11px;
+  }
+
+  .modal-box {
+    padding: 30px 20px;
+  }
+
+  .modal-box h2 {
+    font-size: 28px;
+  }
+
+  .result-stats {
+    grid-template-columns: 1fr;
+  }
+}
