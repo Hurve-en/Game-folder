@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Space Shooter</title>
+    <title>Space Shooter - Enhanced</title>
     <link rel="stylesheet" href="style.css" />
   </head>
   <body>
@@ -24,13 +24,19 @@
             <span class="value" id="lives">3</span>
           </div>
           <div class="stat">
+            <span class="label">Enemies</span>
+            <span class="value" id="enemyCount">0</span>
+          </div>
+          <div class="stat">
             <span class="label">Best</span>
             <span class="value" id="best">0</span>
           </div>
         </div>
       </div>
 
-      <canvas id="gameCanvas" width="800" height="500"></canvas>
+      <div class="game-wrapper">
+        <canvas id="gameCanvas"></canvas>
+      </div>
 
       <div class="controls">
         <button id="startBtn" class="btn primary">START GAME</button>
@@ -39,16 +45,14 @@
       </div>
 
       <div class="instructions">
-        <p>
-          Arrow Keys or WASD to Move | Space to Shoot | Destroy all enemies!
-        </p>
+        <p>Arrow Keys or A/D to Move | Space to Shoot | Destroy all enemies!</p>
       </div>
     </div>
 
     <!-- Game Over Modal -->
     <div id="gameOverModal" class="modal hidden">
       <div class="modal-box">
-        <h2 id="resultTitle">Game Over!</h2>
+        <h2>GAME OVER</h2>
         <div class="result-stats">
           <div class="stat">
             <span class="label">Final Score</span>
