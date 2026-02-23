@@ -3,100 +3,79 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Tic Tac Toe - Modern Design</title>
+    <title>Tic Tac Toe - Minimalist</title>
     <link rel="stylesheet" href="style.css" />
   </head>
   <body>
-    <div class="container">
-      <!-- Menu Screen -->
-      <div class="screen active" id="menuScreen">
-        <div class="menu-wrapper">
-          <div class="logo-section">
-            <h1 class="logo">TIC TAC TOE</h1>
-            <p class="tagline">A Game of Strategy</p>
-          </div>
-
-          <div class="mode-selection">
-            <button class="mode-button" id="aiBtn">
-              <span class="mode-title">Play vs Computer</span>
-              <span class="mode-desc">Challenge the AI</span>
-            </button>
-            <button class="mode-button" id="playerBtn">
-              <span class="mode-title">Two Players</span>
-              <span class="mode-desc">Local Multiplayer</span>
-            </button>
-          </div>
-        </div>
-      </div>
-
-      <!-- Game Screen -->
-      <div class="screen" id="gameScreen">
-        <div class="game-header">
-          <div class="player-info p1-info">
-            <div class="player-label">PLAYER 1</div>
-            <div class="player-mark">X</div>
-            <div class="player-score" id="p1Score">0</div>
-          </div>
-
-          <div class="game-status">
-            <h2 id="statusText">Your Turn</h2>
-          </div>
-
-          <div class="player-info p2-info">
-            <div class="player-label" id="p2Label">COMPUTER</div>
-            <div class="player-mark o-mark">O</div>
-            <div class="player-score" id="p2Score">0</div>
-          </div>
+    <!-- Menu Screen -->
+    <div class="screen menu-screen" id="menuScreen">
+      <div class="menu-container">
+        <div class="menu-header">
+          <h1 class="main-title">TIC TAC TOE</h1>
+          <p class="tagline">Minimalist Edition</p>
         </div>
 
-        <div class="board-container">
-          <div class="game-board" id="gameBoard">
-            <div class="cell" data-index="0"></div>
-            <div class="cell" data-index="1"></div>
-            <div class="cell" data-index="2"></div>
-            <div class="cell" data-index="3"></div>
-            <div class="cell" data-index="4"></div>
-            <div class="cell" data-index="5"></div>
-            <div class="cell" data-index="6"></div>
-            <div class="cell" data-index="7"></div>
-            <div class="cell" data-index="8"></div>
-          </div>
-        </div>
-
-        <div class="game-actions">
-          <button class="action-btn primary" id="newGameBtn">New Game</button>
-          <button class="action-btn secondary" id="backBtn">
-            Back to Menu
+        <div class="mode-buttons">
+          <button class="mode-btn" onclick="selectMode('2player')">
+            <span class="btn-icon">1V1</span>
+            <span class="btn-text">Two Players</span>
+          </button>
+          <button class="mode-btn" onclick="selectMode('ai')">
+            <span class="btn-icon">AI</span>
+            <span class="btn-text">Challenge AI</span>
           </button>
         </div>
       </div>
+    </div>
 
-      <!-- Result Screen -->
-      <div class="screen" id="resultScreen">
-        <div class="result-wrapper">
-          <div class="result-icon" id="resultIcon">✓</div>
-          <h2 class="result-title" id="resultTitle">You Win!</h2>
-          <p class="result-subtitle" id="resultSubtitle">Well played!</p>
-
-          <div class="result-stats">
-            <div class="stat-item">
-              <span class="stat-label">You</span>
-              <span class="stat-number" id="finalP1">0</span>
-            </div>
-            <div class="stat-divider">-</div>
-            <div class="stat-item">
-              <span class="stat-label">Opponent</span>
-              <span class="stat-number" id="finalP2">0</span>
-            </div>
-          </div>
-
-          <div class="result-buttons">
-            <button class="action-btn primary" id="playAgainBtn">
-              Play Again
-            </button>
-            <button class="action-btn secondary" id="menuBtn">Menu</button>
-          </div>
+    <!-- Game Screen -->
+    <div class="screen game-screen hidden" id="gameScreen">
+      <div class="game-header">
+        <div class="player-card p1">
+          <span class="player-icon">X</span>
+          <span class="player-title" id="p1Title">Player 1</span>
+          <span class="player-wins" id="p1Wins">0</span>
         </div>
+
+        <div class="game-status">
+          <span class="status-text" id="statusText">Player 1's Turn</span>
+        </div>
+
+        <div class="player-card p2">
+          <span class="player-icon">O</span>
+          <span class="player-title" id="p2Title">Player 2</span>
+          <span class="player-wins" id="p2Wins">0</span>
+        </div>
+      </div>
+
+      <div class="game-board" id="gameBoard">
+        <div class="cell" data-index="0"></div>
+        <div class="cell" data-index="1"></div>
+        <div class="cell" data-index="2"></div>
+        <div class="cell" data-index="3"></div>
+        <div class="cell" data-index="4"></div>
+        <div class="cell" data-index="5"></div>
+        <div class="cell" data-index="6"></div>
+        <div class="cell" data-index="7"></div>
+        <div class="cell" data-index="8"></div>
+      </div>
+
+      <div class="game-footer">
+        <button class="footer-btn new-game-btn" onclick="newGame()">
+          NEW GAME
+        </button>
+        <button class="footer-btn back-btn" onclick="backToMenu()">BACK</button>
+      </div>
+    </div>
+
+    <!-- Winner Modal -->
+    <div class="modal hidden" id="resultModal">
+      <div class="modal-overlay" onclick="closeModal()"></div>
+      <div class="modal-content">
+        <div class="result-icon" id="resultIcon">✓</div>
+        <h2 id="resultTitle">Player 1 Wins!</h2>
+        <p id="resultMessage">Well played!</p>
+        <button class="modal-btn" onclick="newGame()">Play Again</button>
       </div>
     </div>
 

@@ -1,11 +1,11 @@
-// Game State
-let gameMode = null;
+// Game state
+let gameMode = null; // '2player' or 'ai'
 let currentPlayer = "X";
 let board = ["", "", "", "", "", "", "", "", ""];
 let gameActive = false;
-let scores = { x: 0, o: 0 };
+let scores = { X: 0, O: 0 };
 
-const winningConditions = [
+const winPatterns = [
   [0, 1, 2],
   [3, 4, 5],
   [6, 7, 8],
@@ -19,7 +19,9 @@ const winningConditions = [
 // Load scores
 function loadScores() {
   const saved = localStorage.getItem("tictactoeScores");
-  if (saved) scores = JSON.parse(saved);
+  if (saved) {
+    scores = JSON.parse(saved);
+  }
   updateScores();
 }
 loadScores();
@@ -27,54 +29,205 @@ loadScores();
 // Screen management
 const menuScreen = document.getElementById("menuScreen");
 const gameScreen = document.getElementById("gameScreen");
-const resultScreen = document.getElementById("resultScreen");
+const resultModal = document.getElementById("resultModal");
 
-function showScreen(screen) {
-  menuScreen.classList.remove("active");
-  gameScreen.classList.remove("active");
-  resultScreen.classList.remove("active");
-  screen.classList.add("active");
+function selectMode(mode) {
+  gameMode = mode;
+  menuScreen.classList.add("hidden");
+  gameScreen.classList.remove("hidden");
+
+  if (mode === "2player") {
+    document.getElementById("p2Title").textContent = "Player 2";
+  } else {
+    document.getElementById("p2Title").textContent = "Computer";
+  }
+
+  newGame();
 }
 
-// Menu buttons
-document
-  .getElementById("aiBtn")
-  .addEventListener("click", () => startGame("ai"));
-document
-  .getElementById("playerBtn")
-  .addEventListener("click", () => startGame("2p"));
+function backToMenu() {
+  gameActive = false;
+  gameScreen.classList.add("hidden");
+  menuScreen.classList.remove("hidden");
+  resultModal.classList.add("hidden");
+}
 
-// Game controls
-document.getElementById("newGameBtn").addEventListener("click", newGame);
-document.getElementById("backBtn").addEventListener("click", backToMenu);
-document.getElementById("playAgainBtn").addEventListener("click", newGame);
-document.getElementById("menuBtn").addEventListener("click", backToMenu);
+function closeModal() {
+  resultModal.classList.add("hidden");
+}
 
-// Cell clicks
-const cells = document.querySelectorAll(".cell");
-cells.forEach((cell, index) => {
-  cell.addEventListener("click", () => {
-    if (!gameActive || board[index] !== "") return;
-
-    playerMove(index);
-
-    if (!gameActive) return;
-
-    if (gameMode === "ai") {
-      setTimeout(() => {
-        const aiMove = findBestMove();
-        aiPlayMove(aiMove);
-      }, 600);
-    }
-  });
+// Cell click handler
+document.querySelectorAll(".cell").forEach((cell) => {
+  cell.addEventListener("click", handleCellClick);
 });
 
-function startGame(mode) {
-  gameMode = mode;
-  document.getElementById("p2Label").textContent =
-    mode === "ai" ? "COMPUTER" : "PLAYER 2";
-  showScreen(gameScreen);
-  newGame();
+function handleCellClick(e) {
+  if (!gameActive) return;
+
+  const index = parseInt(e.target.dataset.index);
+
+  // Check if cell is already taken
+  if (board[index] !== "") return;
+
+  // Make the move with current player
+  makeMove(index, currentPlayer);
+
+  if (!gameActive) return;
+
+  // Switch player for next turn
+  if (gameMode === "2player") {
+    currentPlayer = currentPlayer === "X" ? "O" : "X";
+    updateStatus();
+  } else {
+    // AI mode
+    setTimeout(() => {
+      const aiMove = getBestMove();
+      makeMove(aiMove, "O");
+    }, 600);
+  }
+}
+
+function makeMove(index, player) {
+  // Place mark
+  board[index] = player;
+  const cell = document.querySelector(`[data-index="${index}"]`);
+  cell.textContent = player;
+  cell.classList.add("taken");
+
+  // Check for winner
+  if (checkWinner(player)) {
+    scores[player]++;
+    localStorage.setItem("tictactoeScores", JSON.stringify(scores));
+    updateScores();
+    showResult(player);
+    return;
+  }
+
+  // Check for draw
+  if (board.every((cell) => cell !== "")) {
+    showResult("draw");
+    return;
+  }
+}
+
+function checkWinner(player) {
+  for (let pattern of winPatterns) {
+    const [a, b, c] = pattern;
+    if (board[a] === player && board[b] === player && board[c] === player) {
+      highlightWinning(pattern);
+      return true;
+    }
+  }
+  return false;
+}
+
+function highlightWinning(pattern) {
+  pattern.forEach((index) => {
+    const cell = document.querySelector(`[data-index="${index}"]`);
+    cell.classList.add("winner");
+  });
+}
+
+function getBestMove() {
+  // Try to win
+  for (let i = 0; i < 9; i++) {
+    if (board[i] === "") {
+      board[i] = "O";
+      if (checkWinnerQuick("O")) {
+        board[i] = "";
+        return i;
+      }
+      board[i] = "";
+    }
+  }
+
+  // Block player win
+  for (let i = 0; i < 9; i++) {
+    if (board[i] === "") {
+      board[i] = "X";
+      if (checkWinnerQuick("X")) {
+        board[i] = "";
+        return i;
+      }
+      board[i] = "";
+    }
+  }
+
+  // Take center
+  if (board[4] === "") return 4;
+
+  // Take corners
+  const corners = [0, 2, 6, 8];
+  const availableCorners = corners.filter((i) => board[i] === "");
+  if (availableCorners.length > 0) {
+    return availableCorners[
+      Math.floor(Math.random() * availableCorners.length)
+    ];
+  }
+
+  // Take any available
+  const available = board
+    .map((cell, i) => (cell === "" ? i : null))
+    .filter((i) => i !== null);
+  return available[Math.floor(Math.random() * available.length)];
+}
+
+function checkWinnerQuick(player) {
+  for (let pattern of winPatterns) {
+    const [a, b, c] = pattern;
+    if (board[a] === player && board[b] === player && board[c] === player) {
+      return true;
+    }
+  }
+  return false;
+}
+
+function updateStatus() {
+  const statusText = document.getElementById("statusText");
+
+  if (gameMode === "2player") {
+    statusText.textContent =
+      currentPlayer === "X" ? "Player 1's Turn" : "Player 2's Turn";
+  } else {
+    statusText.textContent =
+      currentPlayer === "X" ? "Your Turn" : "AI Thinking...";
+  }
+}
+
+function updateScores() {
+  document.getElementById("p1Wins").textContent = scores.X;
+  document.getElementById("p2Wins").textContent = scores.O;
+}
+
+function showResult(winner) {
+  gameActive = false;
+  const title = document.getElementById("resultTitle");
+  const message = document.getElementById("resultMessage");
+  const icon = document.getElementById("resultIcon");
+
+  if (winner === "X") {
+    if (gameMode === "2player") {
+      title.textContent = "Player 1 Wins!";
+    } else {
+      title.textContent = "You Win!";
+      icon.textContent = "✓";
+    }
+    message.textContent = "Well played!";
+  } else if (winner === "O") {
+    if (gameMode === "2player") {
+      title.textContent = "Player 2 Wins!";
+    } else {
+      title.textContent = "AI Wins!";
+      icon.textContent = "✗";
+    }
+    message.textContent = "Better luck next time!";
+  } else {
+    title.textContent = "It's a Draw!";
+    icon.textContent = "−";
+    message.textContent = "Well matched!";
+  }
+
+  resultModal.classList.remove("hidden");
 }
 
 function newGame() {
@@ -82,240 +235,15 @@ function newGame() {
   board = ["", "", "", "", "", "", "", "", ""];
   gameActive = true;
 
-  cells.forEach((cell) => {
+  resultModal.classList.add("hidden");
+  document.querySelectorAll(".cell").forEach((cell) => {
     cell.textContent = "";
     cell.className = "cell";
   });
 
   updateStatus();
-}
-
-function playerMove(index) {
-  makeMove(index, "X");
-
-  if (gameActive) {
-    currentPlayer = "O";
-    updateStatus();
-  }
-}
-
-function aiPlayMove(index) {
-  makeMove(index, "O");
-
-  if (gameActive) {
-    currentPlayer = "X";
-    updateStatus();
-  }
-}
-
-function makeMove(index, player) {
-  board[index] = player;
-  const cell = cells[index];
-  cell.textContent = player;
-  cell.classList.add("taken", player === "X" ? "x-mark" : "o-mark");
-
-  playSound(300, 80);
-
-  if (checkWinner(player)) {
-    endGame(player);
-    return;
-  }
-
-  if (board.every((c) => c !== "")) {
-    endGame("draw");
-  }
-}
-
-function checkWinner(player) {
-  for (let condition of winningConditions) {
-    const [a, b, c] = condition;
-    if (board[a] === player && board[b] === player && board[c] === player) {
-      highlightWinner(condition);
-      return true;
-    }
-  }
-  return false;
-}
-
-function highlightWinner(condition) {
-  condition.forEach((i) => {
-    cells[i].classList.add("winner");
-  });
-}
-
-function findBestMove() {
-  let bestScore = -Infinity;
-  let bestMove = null;
-
-  for (let i = 0; i < 9; i++) {
-    if (board[i] === "") {
-      board[i] = "O";
-      const score = minimax(board, 0, false);
-      board[i] = "";
-
-      if (score > bestScore) {
-        bestScore = score;
-        bestMove = i;
-      }
-    }
-  }
-
-  return bestMove !== null ? bestMove : board.findIndex((c) => c === "");
-}
-
-function minimax(tempBoard, depth, isMaximizing) {
-  // Check terminal states
-  for (let condition of winningConditions) {
-    const [a, b, c] = condition;
-    if (tempBoard[a] === "O" && tempBoard[b] === "O" && tempBoard[c] === "O")
-      return 10 - depth;
-    if (tempBoard[a] === "X" && tempBoard[b] === "X" && tempBoard[c] === "X")
-      return depth - 10;
-  }
-
-  if (tempBoard.every((c) => c !== "")) return 0;
-
-  if (isMaximizing) {
-    let best = -Infinity;
-    for (let i = 0; i < 9; i++) {
-      if (tempBoard[i] === "") {
-        tempBoard[i] = "O";
-        best = Math.max(best, minimax(tempBoard, depth + 1, false));
-        tempBoard[i] = "";
-      }
-    }
-    return best;
-  } else {
-    let best = Infinity;
-    for (let i = 0; i < 9; i++) {
-      if (tempBoard[i] === "") {
-        tempBoard[i] = "X";
-        best = Math.min(best, minimax(tempBoard, depth + 1, true));
-        tempBoard[i] = "";
-      }
-    }
-    return best;
-  }
-}
-
-function endGame(result) {
-  gameActive = false;
-
-  if (result === "X") {
-    scores.x++;
-    showResult("You Win!", "Well played!", "✓");
-    playWinSound();
-  } else if (result === "O") {
-    scores.o++;
-    showResult("Computer Wins!", "Try again!", "✗");
-    playLoseSound();
-  } else {
-    showResult("Draw!", "Well matched!", "-");
-    playDrawSound();
-  }
-
-  localStorage.setItem("tictactoeScores", JSON.stringify(scores));
   updateScores();
 }
 
-function showResult(title, subtitle, icon) {
-  document.getElementById("resultTitle").textContent = title;
-  document.getElementById("resultSubtitle").textContent = subtitle;
-  document.getElementById("resultIcon").textContent = icon;
-  document.getElementById("finalP1").textContent = scores.x;
-  document.getElementById("finalP2").textContent = scores.o;
-  showScreen(resultScreen);
-}
-
-function updateStatus() {
-  const status = document.getElementById("statusText");
-  if (currentPlayer === "X") {
-    status.textContent = "Your Turn";
-  } else {
-    status.textContent =
-      gameMode === "ai" ? "Computer Thinking..." : "Player 2 Turn";
-  }
-}
-
-function updateScores() {
-  document.getElementById("p1Score").textContent = scores.x;
-  document.getElementById("p2Score").textContent = scores.o;
-}
-
-function backToMenu() {
-  gameActive = false;
-  showScreen(menuScreen);
-}
-
-// Sound effects
-function playSound(freq, duration) {
-  try {
-    const ctx = new (window.AudioContext || window.webkitAudioContext)();
-    const osc = ctx.createOscillator();
-    const gain = ctx.createGain();
-    osc.connect(gain);
-    gain.connect(ctx.destination);
-    osc.frequency.value = freq;
-    osc.type = "sine";
-    gain.gain.setValueAtTime(0.1, ctx.currentTime);
-    gain.gain.exponentialRampToValueAtTime(
-      0.01,
-      ctx.currentTime + duration / 1000,
-    );
-    osc.start(ctx.currentTime);
-    osc.stop(ctx.currentTime + duration / 1000);
-  } catch (e) {}
-}
-
-function playWinSound() {
-  try {
-    const ctx = new (window.AudioContext || window.webkitAudioContext)();
-    const notes = [400, 500, 600];
-    notes.forEach((freq, i) => {
-      const osc = ctx.createOscillator();
-      const gain = ctx.createGain();
-      osc.connect(gain);
-      gain.connect(ctx.destination);
-      osc.frequency.value = freq;
-      osc.type = "sine";
-      const start = ctx.currentTime + i * 0.1;
-      gain.gain.setValueAtTime(0.1, start);
-      gain.gain.exponentialRampToValueAtTime(0.01, start + 0.15);
-      osc.start(start);
-      osc.stop(start + 0.15);
-    });
-  } catch (e) {}
-}
-
-function playLoseSound() {
-  try {
-    const ctx = new (window.AudioContext || window.webkitAudioContext)();
-    const osc = ctx.createOscillator();
-    const gain = ctx.createGain();
-    osc.connect(gain);
-    gain.connect(ctx.destination);
-    osc.frequency.setValueAtTime(300, ctx.currentTime);
-    osc.frequency.linearRampToValueAtTime(200, ctx.currentTime + 0.3);
-    osc.type = "sine";
-    gain.gain.setValueAtTime(0.1, ctx.currentTime);
-    gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.3);
-    osc.start(ctx.currentTime);
-    osc.stop(ctx.currentTime + 0.3);
-  } catch (e) {}
-}
-
-function playDrawSound() {
-  try {
-    const ctx = new (window.AudioContext || window.webkitAudioContext)();
-    const osc = ctx.createOscillator();
-    const gain = ctx.createGain();
-    osc.connect(gain);
-    gain.connect(ctx.destination);
-    osc.frequency.value = 350;
-    osc.type = "sine";
-    gain.gain.setValueAtTime(0.1, ctx.currentTime);
-    gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.2);
-    osc.start(ctx.currentTime);
-    osc.stop(ctx.currentTime + 0.2);
-  } catch (e) {}
-}
+// Initialize
+loadScores();
