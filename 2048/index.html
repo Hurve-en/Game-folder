@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>2048 - Puzzle Game</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <div class="title-section">
+          <h1 class="title">2048</h1>
+          <p class="subtitle">Combine tiles to create 2048</p>
+        </div>
+
+        <div class="stats">
+          <div class="stat">
+            <span class="stat-label">Score</span>
+            <span class="stat-value" id="score">0</span>
+          </div>
+          <div class="stat">
+            <span class="stat-label">Best</span>
+            <span class="stat-value" id="best">0</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="game-board" id="gameBoard">
+        <!-- Tiles will be generated here -->
+      </div>
+
+      <div class="controls">
+        <p class="instructions">Use Arrow Keys or WASD to move tiles</p>
+        <div class="buttons">
+          <button class="btn primary" id="newGameBtn">New Game</button>
+          <button class="btn secondary" id="undoBtn">Undo</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Game Over Modal -->
+    <div class="modal hidden" id="gameOverModal">
+      <div class="modal-overlay" onclick="closeModal()"></div>
+      <div class="modal-content">
+        <h2 id="modalTitle">Game Over!</h2>
+        <p id="modalMessage">Try again!</p>
+        <div class="modal-stats">
+          <div class="stat">
+            <span class="stat-label">Final Score</span>
+            <span class="stat-value" id="finalScore">0</span>
+          </div>
+          <div class="stat">
+            <span class="stat-label">Best Score</span>
+            <span class="stat-value" id="finalBest">0</span>
+          </div>
+        </div>
+        <button class="btn primary" onclick="startNewGame()">New Game</button>
+      </div>
+    </div>
+
+    <!-- Win Modal -->
+    <div class="modal hidden" id="winModal">
+      <div class="modal-overlay" onclick="closeModal()"></div>
+      <div class="modal-content">
+        <h2>You Reached 2048!</h2>
+        <p>Amazing! You can keep playing to get a higher score.</p>
+        <div class="modal-stats">
+          <div class="stat">
+            <span class="stat-label">Score</span>
+            <span class="stat-value" id="winScore">0</span>
+          </div>
+        </div>
+        <button class="btn primary" onclick="closeWinModal()">
+          Keep Playing
+        </button>
+        <button class="btn secondary" onclick="startNewGame()">New Game</button>
+      </div>
+    </div>
+
+    <script src="game.js"></script>
+  </body>
+</html>
