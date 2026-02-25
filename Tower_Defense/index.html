@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Tower Defense - Fun Edition</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div class="container">
+      <div class="top-bar">
+        <div class="title-section">
+          <h1 class="title">🎪 TOWER DEFENSE</h1>
+          <p class="subtitle">Build Towers, Defend Your Base!</p>
+        </div>
+
+        <div class="stats-section">
+          <div class="stat-card gold">
+            <span class="stat-icon">💰</span>
+            <span class="stat-label">Gold</span>
+            <span class="stat-value" id="gold">500</span>
+          </div>
+          <div class="stat-card health">
+            <span class="stat-icon">❤️</span>
+            <span class="stat-label">Health</span>
+            <span class="stat-value" id="health">20</span>
+          </div>
+          <div class="stat-card wave">
+            <span class="stat-icon">🌊</span>
+            <span class="stat-label">Wave</span>
+            <span class="stat-value" id="wave">1</span>
+          </div>
+          <div class="stat-card kills">
+            <span class="stat-icon">⚔️</span>
+            <span class="stat-label">Kills</span>
+            <span class="stat-value" id="kills">0</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="game-area">
+        <canvas id="gameCanvas"></canvas>
+
+        <div class="tower-menu" id="towerMenu">
+          <h3>Select Tower</h3>
+          <div class="tower-buttons">
+            <button
+              class="tower-btn"
+              data-tower="gun"
+              title="Gun Tower - Cost: 100"
+            >
+              <span class="tower-emoji">🔫</span>
+              <span class="tower-name">Gun</span>
+              <span class="tower-cost">100</span>
+            </button>
+            <button
+              class="tower-btn"
+              data-tower="laser"
+              title="Laser Tower - Cost: 200"
+            >
+              <span class="tower-emoji">💥</span>
+              <span class="tower-name">Laser</span>
+              <span class="tower-cost">200</span>
+            </button>
+            <button
+              class="tower-btn"
+              data-tower="ice"
+              title="Ice Tower - Cost: 150"
+            >
+              <span class="tower-emoji">❄️</span>
+              <span class="tower-name">Ice</span>
+              <span class="tower-cost">150</span>
+            </button>
+          </div>
+          <div class="tower-info" id="towerInfo">
+            Click on a tower type, then click on the map to place it
+          </div>
+        </div>
+      </div>
+
+      <div class="bottom-bar">
+        <button class="btn play-btn" id="startBtn">START WAVE</button>
+        <button class="btn speed-btn" id="speedBtn">SPEED: 1x</button>
+        <button class="btn reset-btn" id="resetBtn">RESET GAME</button>
+      </div>
+    </div>
+
+    <!-- Game Over Modal -->
+    <div class="modal hidden" id="gameOverModal">
+      <div class="modal-overlay" onclick="closeModal()"></div>
+      <div class="modal-content">
+        <div class="modal-icon" id="modalIcon">😢</div>
+        <h2 id="modalTitle">Game Over!</h2>
+        <p id="modalMessage">You survived to wave 1</p>
+        <div class="modal-stats">
+          <div class="stat-item">
+            <span class="stat-label">Waves Completed</span>
+            <span class="stat-value" id="finalWave">1</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-label">Enemies Defeated</span>
+            <span class="stat-value" id="finalKills">0</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-label">Gold Spent</span>
+            <span class="stat-value" id="finalGold">500</span>
+          </div>
+        </div>
+        <button class="btn play-btn" onclick="resetGame()">Play Again</button>
+      </div>
+    </div>
+
+    <!-- Wave Clear Modal -->
+    <div class="modal hidden" id="waveClearModal">
+      <div class="modal-overlay" onclick="closeWaveModal()"></div>
+      <div class="modal-content">
+        <div class="modal-icon">🎉</div>
+        <h2>Wave Complete!</h2>
+        <p id="waveMessage">Great job! Wave 2 is incoming!</p>
+        <div class="modal-stats">
+          <div class="stat-item">
+            <span class="stat-label">Gold Earned</span>
+            <span class="stat-value" id="waveGold">100</span>
+          </div>
+        </div>
+        <button class="btn play-btn" onclick="closeWaveModal()">
+          Next Wave
+        </button>
+      </div>
+    </div>
+
+    <script src="game.js"></script>
+  </body>
+</html>
