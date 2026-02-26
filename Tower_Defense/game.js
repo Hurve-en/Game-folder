@@ -179,26 +179,33 @@ function updateGame() {
   for (let tower of towers) {
     tower.nextFire--;
 
-    // Find target
+    // Find closest target
+    let closestEnemy = null;
+    let closestDist = tower.range;
+
     for (let enemy of enemies) {
       const dx = enemy.x - tower.x;
       const dy = enemy.y - tower.y;
       const dist = Math.sqrt(dx * dx + dy * dy);
 
-      if (dist < tower.range && tower.nextFire <= 0) {
-        // Shoot
-        bullets.push({
-          x: tower.x,
-          y: tower.y,
-          targetX: enemy.x,
-          targetY: enemy.y,
-          damage: tower.damage,
-          speed: 8,
-        });
-
-        tower.nextFire = 60 / tower.fireRate;
-        break;
+      if (dist < closestDist) {
+        closestDist = dist;
+        closestEnemy = enemy;
       }
+    }
+
+    // Shoot closest enemy
+    if (closestEnemy && tower.nextFire <= 0) {
+      bullets.push({
+        x: tower.x,
+        y: tower.y,
+        targetX: closestEnemy.x,
+        targetY: closestEnemy.y,
+        damage: tower.damage,
+        speed: 8,
+      });
+
+      tower.nextFire = 60 / tower.fireRate;
     }
   }
 
@@ -210,14 +217,17 @@ function updateGame() {
     const dy = bullet.targetY - bullet.y;
     const dist = Math.sqrt(dx * dx + dy * dy);
 
-    if (dist < bullet.speed) {
-      // Hit
+    if (dist < 20) {
+      // Hit - check all enemies near bullet
+      let hit = false;
       for (let j = enemies.length - 1; j >= 0; j--) {
-        if (
-          enemies[j].x === bullet.targetX &&
-          enemies[j].y === bullet.targetY
-        ) {
+        const edx = enemies[j].x - bullet.x;
+        const edy = enemies[j].y - bullet.y;
+        const edist = Math.sqrt(edx * edx + edy * edy);
+
+        if (edist < 15) {
           enemies[j].health -= bullet.damage;
+          hit = true;
 
           if (enemies[j].health <= 0) {
             gameState.score += 10;
@@ -229,8 +239,11 @@ function updateGame() {
       }
 
       bullets.splice(i, 1);
+    } else if (dist > 500) {
+      // Bullet went too far
+      bullets.splice(i, 1);
     } else {
-      // Move bullet
+      // Move bullet toward target
       const angle = Math.atan2(dy, dx);
       bullet.x += Math.cos(angle) * bullet.speed;
       bullet.y += Math.sin(angle) * bullet.speed;
