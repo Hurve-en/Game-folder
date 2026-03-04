@@ -128,27 +128,27 @@ function update() {
 
   if (gamePaused) return;
 
-  // Player 1 controls
-  if (keys["w"] || keys["arrowup"]) {
+  // Player 1 controls (W and S)
+  if (keys["w"]) {
     p1.y = Math.max(0, p1.y - PADDLE_SPEED);
   }
-  if (keys["s"] || keys["arrowdown"]) {
+  if (keys["s"]) {
     p1.y = Math.min(canvas.height - PADDLE_HEIGHT, p1.y + PADDLE_SPEED);
   }
 
   // Player 2 controls
   if (gameMode === "2player") {
-    if (keys["i"]) {
+    // Player 2 uses Arrow Keys
+    if (keys["arrowup"]) {
       p2.y = Math.max(0, p2.y - PADDLE_SPEED);
     }
-    if (keys["k"]) {
+    if (keys["arrowdown"]) {
       p2.y = Math.min(canvas.height - PADDLE_HEIGHT, p2.y + PADDLE_SPEED);
     }
   } else {
     // AI controls
     const paddleCenter = p2.y + PADDLE_HEIGHT / 2;
     const ballCenter = ball.y;
-    const difficulty = 0.04;
 
     if (ballCenter < paddleCenter - 35) {
       p2.y = Math.max(0, p2.y - PADDLE_SPEED * 0.9);
