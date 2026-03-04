@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>PONG - Fullscreen</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <canvas id="pongCanvas"></canvas>
+
+    <div class="overlay" id="overlay">
+      <div class="menu">
+        <h1>PONG</h1>
+        <p class="subtitle">Classic Two Player Game</p>
+
+        <div class="mode-select">
+          <button class="mode-btn" onclick="startGame('ai')">
+            <span class="mode-title">VS AI</span>
+            <span class="mode-desc">Play against computer</span>
+          </button>
+          <button class="mode-btn" onclick="startGame('2player')">
+            <span class="mode-title">2 PLAYERS</span>
+            <span class="mode-desc">Play with friend</span>
+          </button>
+        </div>
+
+        <div class="controls-info">
+          <h3>Controls</h3>
+          <p>
+            <strong>Player 1:</strong> W/Up Arrow - Up | S/Down Arrow - Down
+          </p>
+          <p><strong>Player 2:</strong> I - Up | K - Down</p>
+          <p>Press SPACE to pause</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="hud" id="hud">
+      <div class="score-container">
+        <div class="player-score">
+          <span class="player-name" id="p1Name">PLAYER 1</span>
+          <span class="score-value" id="p1Score">0</span>
+        </div>
+        <div class="center-info">
+          <span id="gameStatus">Press SPACE to start</span>
+        </div>
+        <div class="player-score">
+          <span class="score-value" id="p2Score">0</span>
+          <span class="player-name" id="p2Name">PLAYER 2</span>
+        </div>
+      </div>
+    </div>
+
+    <script src="game.js"></script>
+  </body>
+</html>

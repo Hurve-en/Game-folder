@@ -1,0 +1,279 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html,
+body {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  font-family: Arial, sans-serif;
+  background: #000;
+}
+
+#pongCanvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  background: #000;
+}
+
+/* Overlay Menu */
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.95);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  transition: opacity 0.3s;
+}
+
+.overlay.hidden {
+  display: none;
+}
+
+.menu {
+  text-align: center;
+  color: white;
+}
+
+.menu h1 {
+  font-size: 80px;
+  font-weight: 900;
+  letter-spacing: 4px;
+  margin-bottom: 12px;
+  text-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
+}
+
+.subtitle {
+  font-size: 18px;
+  color: #aaa;
+  margin-bottom: 60px;
+  letter-spacing: 2px;
+}
+
+.mode-select {
+  display: flex;
+  gap: 40px;
+  justify-content: center;
+  margin-bottom: 60px;
+}
+
+.mode-btn {
+  background: white;
+  border: 3px solid white;
+  padding: 30px 50px;
+  border-radius: 0;
+  cursor: pointer;
+  transition: all 0.3s;
+  min-width: 250px;
+}
+
+.mode-btn:hover {
+  background: #000;
+  transform: scale(1.05);
+}
+
+.mode-btn:hover .mode-title {
+  color: white;
+}
+
+.mode-btn:hover .mode-desc {
+  color: #aaa;
+}
+
+.mode-title {
+  display: block;
+  font-size: 24px;
+  font-weight: 700;
+  color: #000;
+  margin-bottom: 8px;
+  letter-spacing: 1px;
+}
+
+.mode-desc {
+  display: block;
+  font-size: 13px;
+  color: #666;
+  letter-spacing: 0.5px;
+}
+
+.controls-info {
+  background: rgba(255, 255, 255, 0.05);
+  border: 2px solid rgba(255, 255, 255, 0.1);
+  padding: 30px 40px;
+  max-width: 600px;
+  margin: 0 auto;
+  border-radius: 0;
+}
+
+.controls-info h3 {
+  font-size: 16px;
+  color: white;
+  margin-bottom: 16px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.controls-info p {
+  font-size: 13px;
+  color: #aaa;
+  margin: 8px 0;
+  letter-spacing: 0.5px;
+}
+
+.controls-info strong {
+  color: #fff;
+}
+
+/* HUD */
+.hud {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  padding: 30px;
+  z-index: 50;
+  pointer-events: none;
+}
+
+.score-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: white;
+  font-weight: 700;
+  letter-spacing: 2px;
+}
+
+.player-score {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.player-name {
+  font-size: 14px;
+  color: #aaa;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.score-value {
+  font-size: 60px;
+  font-family: monospace;
+  color: #fff;
+  text-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
+}
+
+.center-info {
+  flex: 1;
+  text-align: center;
+}
+
+#gameStatus {
+  font-size: 16px;
+  color: #aaa;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+/* Animations */
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+.pulse {
+  animation: pulse 0.5s ease-in-out infinite;
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+  .menu h1 {
+    font-size: 60px;
+  }
+
+  .mode-select {
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .mode-btn {
+    min-width: 100%;
+    padding: 20px 40px;
+  }
+
+  .score-value {
+    font-size: 40px;
+  }
+
+  .player-name {
+    font-size: 12px;
+  }
+}
+
+@media (max-width: 600px) {
+  .menu h1 {
+    font-size: 40px;
+    margin-bottom: 8px;
+  }
+
+  .subtitle {
+    font-size: 14px;
+    margin-bottom: 30px;
+  }
+
+  .mode-select {
+    margin-bottom: 30px;
+  }
+
+  .mode-btn {
+    padding: 16px 24px;
+  }
+
+  .mode-title {
+    font-size: 16px;
+  }
+
+  .mode-desc {
+    font-size: 11px;
+  }
+
+  .controls-info {
+    padding: 20px 24px;
+  }
+
+  .controls-info p {
+    font-size: 11px;
+  }
+
+  .hud {
+    padding: 16px;
+  }
+
+  .score-value {
+    font-size: 32px;
+  }
+
+  .player-name {
+    font-size: 10px;
+  }
+
+  #gameStatus {
+    font-size: 12px;
+  }
+}
