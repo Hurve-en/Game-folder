@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Rock Paper Scissors</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <h1>ROCK PAPER SCISSORS</h1>
+        <p class="subtitle">Beat the AI!</p>
+      </div>
+
+      <div class="stats-bar">
+        <div class="stat-item">
+          <span class="stat-label">YOU</span>
+          <span class="stat-value" id="playerWins">0</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-label">AI</span>
+          <span class="stat-value" id="aiWins">0</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-label">DRAWS</span>
+          <span class="stat-value" id="draws">0</span>
+        </div>
+      </div>
+
+      <div class="game-area">
+        <div class="player-section">
+          <h2>Your Move</h2>
+          <div class="choices">
+            <button class="choice-btn rock" onclick="play('rock')">
+              <span class="emoji">🪨</span>
+              <span class="label">ROCK</span>
+            </button>
+            <button class="choice-btn paper" onclick="play('paper')">
+              <span class="emoji">📄</span>
+              <span class="label">PAPER</span>
+            </button>
+            <button class="choice-btn scissors" onclick="play('scissors')">
+              <span class="emoji">✂️</span>
+              <span class="label">SCISSORS</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="result-section" id="resultSection">
+          <div class="result-box" id="resultBox">
+            <p class="result-text">Make your move!</p>
+          </div>
+        </div>
+
+        <div class="ai-section">
+          <h2>AI Move</h2>
+          <div class="ai-choice" id="aiChoice">
+            <span class="emoji">❓</span>
+            <span class="label">Waiting...</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="button-area">
+        <button class="btn reset-btn" onclick="resetScore()">
+          Reset Score
+        </button>
+      </div>
+
+      <div class="info">
+        <p>
+          Click a button to make your move. Win best out of 3, 5, or keep
+          playing!
+        </p>
+      </div>
+    </div>
+
+    <script src="game.js"></script>
+  </body>
+</html>
