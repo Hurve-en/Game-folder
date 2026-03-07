@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>WORDLE</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <h1>WORDLE</h1>
+        <p class="stats">Wins: <span id="wins">0</span></p>
+      </div>
+
+      <div class="game">
+        <div class="board" id="board"></div>
+
+        <div class="keyboard" id="keyboard"></div>
+      </div>
+
+      <div class="message" id="message"></div>
+
+      <button class="new-game-btn" onclick="newGame()">NEW GAME</button>
+    </div>
+
+    <script src="game.js"></script>
+  </body>
+</html>
