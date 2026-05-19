@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Flappy Bird</title>
-    <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" href="css/styles.css" />
   </head>
   <body>
     <div class="container">
@@ -28,6 +28,13 @@
       </div>
     </div>
 
-    <script src="game.js"></script>
+    <!-- Script files loaded in dependency order -->
+    <script src="js/config.js"></script>
+    <script src="js/bird.js"></script>
+    <script src="js/pipes.js"></script>
+    <script src="js/renderer.js"></script>
+    <script src="js/game-logic.js"></script>
+    <script src="js/input.js"></script>
+    <script src="js/main.js"></script>
   </body>
 </html>
