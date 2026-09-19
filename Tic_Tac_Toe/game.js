@@ -231,6 +231,12 @@ function showResult(winner) {
 }
 
 function newGame() {
+  scores = { X: 0, O: 0 };
+  localStorage.setItem("tictactoeScores", JSON.stringify(scores));
+  startRound();
+}
+
+function startRound() {
   currentPlayer = "X";
   board = ["", "", "", "", "", "", "", "", ""];
   gameActive = true;
